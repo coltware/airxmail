@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="fxmail" basedir="..">
+	<!-- FLEX SDKの設定 -->
+	<!--  ******* 以下　環境に合わせて書き直すこと ************* -->
+	
+	<!-- 
+		SDKの場所を指定
+		(自動でとれないかな）
+	-->
+	<property name="FLEX_SDK" value="C:\Program Files\Adobe\Flex Builder 3\sdks\3.2.0" />
+	<property name="PRJ_ROOT" value="${basedir}/../" />
+	<!-- 
+		注意）
+		Flash Verison 10 の場合にはflex-configの自作が必要
+		ただし、中で呼んでいるライブラリが相対パスになっているみたいで、全部移すのが面倒なので同じ階層に作成してしまう。 
+	-->
+	<property name="load-config" value="-load-config '${FLEX_SDK}/frameworks/air-config.xml'" />
+	<!-- <property name="load-config" value="-load-config '${FLEX_SDK}/frameworks/flex-config.xml'" /> -->
+	
+	<!-- ソースのディレクトリ -->
+	<property name="SRC_PATH" value="${basedir}/src ${PRJ_ROOT}/commons/src" />
+	
+	<property name="FLEX_ANT" value="${FLEX_SDK}/ant/lib" />
+	<property name="FLEX_BIN" value="${FLEX_SDK}/bin" />
+	
+	<!-- 
+	**********************************************************************
+	ASDOC のための設定 
+	**********************************************************************
+	-->
+	<!--  addocの出力フォルダ -->
+	<property name="ASDOC_DIR" value="${basedir}/dist/asdoc" />
+	
+	<!--
+	*********************************************************************
+	ここからターゲット処理
+	*********************************************************************
+	-->
+	<target name="asdoc">
+		<exec executable="${FLEX_BIN}/asdoc.exe">
+			<arg line="-source-path ${SRC_PATH} -doc-sources ${SRC_PATH} -output ${ASDOC_DIR} ${load-config}"/>
+			<env key="JAVA_HOME" value="${java.home}"/>
+		</exec>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${ASDOC_DIR}"></delete>
+	</target>
+</project>
