@@ -11,6 +11,10 @@ package com.coltware.airxmail
 	/**
 	 * Recipient Type
 	 * 
+	 *  TO:
+	 *  CC:
+	 *  BCC:
+	 * 
 	 */
 	public class RecipientType
 	{

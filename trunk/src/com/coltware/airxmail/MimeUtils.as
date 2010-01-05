@@ -10,12 +10,18 @@ package com.coltware.airxmail
 {
 	import flash.utils.*;
 	
-	import mx.utils.*;
+	import mx.utils.Base64Decoder;
+	import mx.utils.Base64Encoder;
 	
 	public class MimeUtils {
 		
 		/**
-		 * MIMEヘッダ(=?[charset]?[encode]?[data]?=)のデコード関数.
+		 * Decode MimeHeader.
+		 *  
+		 *  decode these string
+		 *  <ol>
+		 * 	   <li>=?[charset]?[encode]?[data]?=</li>
+		 *  </ol>
 		 * 
 		 * ただし、現在はencodeはB形式にしか対応していません。
 		 * 

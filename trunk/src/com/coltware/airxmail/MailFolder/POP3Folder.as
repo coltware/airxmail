@@ -4,7 +4,13 @@ package com.coltware.airxmail.MailFolder
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
-
+	
+	/**
+	 * Developing...
+	 * 
+	 * @private
+	 *
+	 */
 	public class POP3Folder extends EventDispatcher implements IMailFolder
 	{
 		public function POP3Folder(target:IEventDispatcher=null)
