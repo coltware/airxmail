@@ -8,8 +8,8 @@
  */
 package com.coltware.airxmail
 {
-	import com.coltware.commons.utils.DateUtils;
 	import com.coltware.airxmail_internal;
+	import com.coltware.commons.utils.DateUtils;
 	
 	import flash.utils.*;
 	
@@ -24,8 +24,9 @@ package com.coltware.airxmail
 	 */  
 	public class MimeMessage extends MimeMultiPart{
 		
-		include "../airxmail.as";
+		
 		private static var log:ILogger = Log.getLogger("com.coltware.airxmail.MimeMessage");
+		private var $__debug__:Boolean = AirxMailConfig.DEBUG;
 		
 		private static var RN:String = "\r\n";
 		/**

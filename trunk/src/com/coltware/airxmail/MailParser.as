@@ -26,7 +26,7 @@ package com.coltware.airxmail
 	 */
 	public class MailParser extends EventDispatcher
 	{
-		include "../airxmail.as";
+		private var $__debug__:Boolean = AirxMailConfig.DEBUG;
 		
 		private static const CR:int 	= 0x0D;
 		private static const LF:int 	= 0x0A;
