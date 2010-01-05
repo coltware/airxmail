@@ -8,21 +8,30 @@
  */
 package com.coltware.airxmail
 {
+	import com.coltware.airxmail_internal;
+	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	import mx.utils.StringUtil;
 	import mx.utils.UIDUtil;
-	
-	import com.coltware.airxmail_internal;
 	use namespace airxmail_internal;
 	
+	/**
+	 *   ContentType Class
+	 */
 	public class ContentType extends MimeHeader
 	{
-		include "../airxmail.as";
+		private var $__debug__:Boolean = AirxMailConfig.DEBUG;
 		
 		private static var log:ILogger = Log.getLogger("com.coltware.airxmail.ContentType");
 		
+		/**
+		 *  multipart/mixed
+		 */
 		public static const MULTIPART_MIXED:String = "multpart/mixed";
+		/**
+		 *  multipart/alternative
+		 */
 		public static const MULTIPART_ALTERNATIVE:String = "multipart/alternative";
 		
 		private var _mainType:String ;
@@ -35,13 +44,25 @@ package com.coltware.airxmail
 			this.key = "content-type";
 		}
 		
+		/**
+		 *  return main type
+		 *  
+		 *  ex) if content-type is "text/plain" , return value is "text"
+		 */
 		public function getMainType():String{
 			return this._mainType;
 		}
+		/**
+		 *  return sub type
+		 * 
+		 *  ex) if content-type is "text/plain" , return value is "plain"
+		 */
 		public function getSubStype():String{
 			return this._subType;
 		}
-		
+		/**
+		 *  set main type
+		 */
 		public function setMainType(v:String):void{
 			if(v == "text"){
 				this._isBinary = false;
@@ -51,12 +72,15 @@ package com.coltware.airxmail
 			}
 			this._mainType = v;
 		}
+		/**
+		 *  set sub type
+		 */
 		public function setSubStype(v:String):void{
 			this._subType = v;
 		}
 		
 		/**
-		 * マルチパートのコンテントタイプか
+		 *  is multipart type?
 		 * 
 		 */
 		public function isMultipart():Boolean{
@@ -80,7 +104,11 @@ package com.coltware.airxmail
 				return false;
 			}
 		}
-		
+		/**
+		 *  return content-type string value
+		 * 
+		 *  ex) text/plain; charset="UTF-8"
+		 */
 		public function getValue():String{
 			
 			var ret:String = this._mainType + "/" + this._subType;
@@ -96,6 +124,15 @@ package com.coltware.airxmail
 			return ret;
 		}
 		
+		/**
+		 *  create new instance from content-type string
+		 * 
+		 * <code>
+		 *  ContentType.parseValue("text/plain;charset=\"ISO-2022-JP\"");
+		 * </code>
+		 * 
+		 *  @param str content-type string
+		 */
 		public static function parseValue(str:String):ContentType{
 			var ct:ContentType = new ContentType();
 			str = StringUtil.trim(str);

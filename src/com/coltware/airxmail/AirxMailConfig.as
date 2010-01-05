@@ -63,5 +63,9 @@ package com.coltware.airxmail
 				return null;
 			}
 		}
+		
+		airxmail_internal static function get DEBUG():Boolean{
+			return false;
+		}
 	}
 }
