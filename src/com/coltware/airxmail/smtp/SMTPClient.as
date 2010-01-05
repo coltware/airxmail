@@ -25,6 +25,14 @@ package com.coltware.airxmail.smtp
 	use namespace airxmail_internal;
 	
 	/**
+	 *  @eventType flash.events.IOErrorEvent.IO_ERROR
+	 */
+	[Event(name="ioError",type="flash.events.IOErrorEvent")]
+	/**
+	 *  @eventType flash.events.SecurityErrorEvent.SECURITY_ERROR
+	 */
+	[Event (name="securityError",type="flash.events.SecurityErrorEvent")]
+	/**
 	 *  dataAsync()コマンドを投げてデータが書き出せる状態になったときのイベント
 	 * 
 	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.ACCEPT_DATA
@@ -33,6 +41,7 @@ package com.coltware.airxmail.smtp
 	
 	/**
 	 *  SMTPレベルで接続ができなかったときのイベント.
+	 *  Can *NOT* connect SMTP Connection. ( Not TCP Connection )
 	 * 
 	 * メモ：Socketベースではありません。HELOもしくはEHLOを投げてエラーとなったときに発行されます。
 	 * ただし、EHLOでESMTPをサポートしていないエラーはここに含まれません。
@@ -49,7 +58,7 @@ package com.coltware.airxmail.smtp
 	 * 
 	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.NOT_SUPPORT_ESMTP;
 	 */
-	[Event(name="smtpNotSupportESMTP",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	[Event(name="smtpNotSupportEsmtp",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	/**
 	 *  EHLOコマンドを投げてESMTPをサポートしていなかったときに発行されます。
 	 *
@@ -61,7 +70,8 @@ package com.coltware.airxmail.smtp
 	[Event(name="smtpNoopOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
 	/**
-	 *  SMTPのプロトコルを処理するためのクラス
+	 *  SMTP Client Class
+	 * 
 	 * 
 	 */
 	public class SMTPClient extends SocketJobSync
@@ -118,7 +128,9 @@ package com.coltware.airxmail.smtp
 		}
 		
 		/**
-		 * HELOコマンド
+		 * HELO Command
+		 * 
+		 * @param myshot 
 		 */
 		public function helo(myhost:String):void{
 			var cmd:Object = new Object;
@@ -127,7 +139,7 @@ package com.coltware.airxmail.smtp
 			this.addJob(cmd);
 		}
 		/**
-		 *  EHLOコマンド
+		 *  ESMTP HELO Command
 		 *  
 		 *  @param autoESMTP ESMTPが利用できない場合には自動的にHELOにする
 		 * 

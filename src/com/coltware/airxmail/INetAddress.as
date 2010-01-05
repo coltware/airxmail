@@ -22,29 +22,44 @@ package com.coltware.airxmail
 		private var _address:String = null;
 		private var _personal:String = null;
 		
+		/**
+		 *  E-Mail( XXXXXX &lt;xxxx@yyyy.zz&gt; ) Address class
+		 *  
+		 */
 		public function INetAddress(addr:String = null,personal:String = null)
 		{
 			this._address = addr;
 			this._personal = personal;
 		}
 		
+		/**
+		 *  get e-mail address
+		 */
 		public function get address():String{
 			return _address;
 		}
+		/**
+		 *  set e-mail address
+		 */
 		public function set address(addr:String):void{
 			this._address = addr;
 		}
-		
+		/**
+		 *  get e-mail label
+		 */
 		public function get personal():String{
 			return this._personal;
 		}
-		
+		/**
+		 *  set e-mail label
+		 */
 		public function set personal(label:String):void{
 			this._personal = label;
 		}
 		
 		/**
-		 *  MIME形式にエンコードした文字列を返す
+		 *  return Mime encoded string
+		 *  
 		 */
 		public function toMimeString(charset:String = null):String{
 			var mime:String = "";
@@ -117,9 +132,5 @@ package com.coltware.airxmail
 			}
 			return ret;
 		}
-		
-		
-		
-
 	}
 }
