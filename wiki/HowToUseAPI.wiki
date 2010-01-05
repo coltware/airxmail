@@ -1,0 +1,14 @@
+= How to USE API =
+
+== Requirements ==
+
+AIR 1.5 or more
+Flex 3.2 or more
+
+== How to send mail via SMTP ==
+
+undocumented...
+
+== How to receive mail via POP3 ==
+
+undocumented...
