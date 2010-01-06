@@ -10,20 +10,17 @@ package com.coltware.airxmail
 {
 	import flash.utils.*;
 	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
 	import mx.utils.Base64Decoder;
 	import mx.utils.Base64Encoder;
 	
 	public class MimeUtils {
 		
+		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.MimeUtils");
+		
 		/**
-		 * Decode MimeHeader.
-		 *  
-		 *  decode these string
-		 *  <ol>
-		 * 	   <li>=?[charset]?[encode]?[data]?=</li>
-		 *  </ol>
-		 * 
-		 * ただし、現在はencodeはB形式にしか対応していません。
+		 * Decode MIME Header (=?[charset]?[encode]?[data]?=).
 		 * 
 		 */
 		static public function decodeMimeHeader(input:String):String{
@@ -62,6 +59,7 @@ package com.coltware.airxmail
 								ret += bytes.readMultiByte(bytes.bytesAvailable,charset);
 							}
 							else if(tranType == "q"){
+								ret += decode_q(title,charset);
 							}
 						}
 						else{
@@ -111,6 +109,28 @@ package com.coltware.airxmail
 			ret += encoder.toString();
 			ret += "?=";
 			return ret;
+		}
+		
+		public static function decode_q(text:String,charset:String):String{
+			var ret:ByteArray = new ByteArray();
+			var len:int = text.length;
+			var ch:String;
+			var i:int = 0;
+			while(i < len){
+				ch = text.charAt(i);
+				if(ch == "="){
+					var numStr:String = text.substr(i+1,2);
+					var num:Number = parseInt(numStr,16);
+					ret.writeByte(num);
+					i+=3;
+				}
+				else{
+					ret.writeUTFBytes(ch);
+					i++;
+				}
+			}
+			ret.position = 0;
+			return ret.readMultiByte(ret.bytesAvailable,charset);
 		}
 	}
 }
