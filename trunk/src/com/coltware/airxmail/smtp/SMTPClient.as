@@ -8,9 +8,9 @@
  */
 package com.coltware.airxmail.smtp
 {
+	import com.coltware.airxmail_internal;
 	import com.coltware.commons.job.SocketJobSync;
 	import com.coltware.commons.utils.StringLineReader;
-	import com.coltware.airxmail_internal;
 	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
@@ -38,6 +38,19 @@ package com.coltware.airxmail.smtp
 	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.ACCEPT_DATA
 	 */
 	[Event(name="smtpAcceptData",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	/**
+	 *  method stack is empty
+	 * 
+	 * @eventType com.coltware.commons.job.JobEvent.JOB_STACK_EMPTY
+	 */
+	[Event(name="jobStackEmpty",type="com.coltware.commons.job.JobEvent")]
+	/**
+	 *  job idle timeout
+	 * 
+	 * @eventType com.coltware.commons.job.JobEvent.JOB_IDLE_TIMEOUT
+	 */
+	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
 	
 	/**
 	 *  SMTPレベルで接続ができなかったときのイベント.
@@ -114,6 +127,10 @@ package com.coltware.airxmail.smtp
 			_username = username;
 			_password = password;
 			this._enableAuth = true;
+		}
+		
+		public function setIdleTimeout(msec:int):void{
+			this._idleTimeout = msec;
 		}
 		
 		/**
