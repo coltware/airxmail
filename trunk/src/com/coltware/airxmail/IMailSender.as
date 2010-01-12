@@ -31,6 +31,8 @@
 		function hasEventListener(type:String):Boolean;
 
 		function willTrigger(type:String):Boolean;
+		
+		function close():void;
 	}
 
 }

@@ -7,12 +7,13 @@
  * @author coltware@gmail.com
  */
 package com.coltware.airxmail.MailSender
-{
+{	
 	import com.coltware.airxmail.IMailSender;
 	import com.coltware.airxmail.MimeMessage;
 	import com.coltware.airxmail.smtp.SMTPClient;
 	import com.coltware.airxmail.smtp.SMTPEvent;
 	import com.coltware.airxmail_internal;
+	import com.coltware.commons.job.JobEvent;
 	
 	import flash.events.EventDispatcher;
 	import flash.utils.IDataOutput;
@@ -31,6 +32,28 @@ package com.coltware.airxmail.MailSender
 	{
 		private static var log:ILogger = Log.getLogger("com.coltware.airxmail.MailSender.SMTPSender");
 		
+		/**
+		 * @see setParameter
+		 */
+		public static const HOST:String = "host";
+		/**
+		 *  SMTP Port
+		 *  @see setParameter
+		 */
+		public static const PORT:String = "port";
+		public static const AUTH:String = "auth";
+		public static const USERNAME:String = "username";
+		public static const PASSWORD:String = "password";
+		/**
+		 *  SMTP via TLS(or SSL)
+		 *  @see setParameter
+		 */
+		public static const SSL:String = "ssl";
+		public static const SOCKET_OBJECT:String = "socket";
+		public static const MYHOSTNAME:String = "myhostname";
+		public static const IDLE_TIMEOUT:String = "idleTimeout";
+		
+		
 		private var client:SMTPClient;
 		private var currentMessage:MimeMessage;
 		
@@ -39,6 +62,7 @@ package com.coltware.airxmail.MailSender
 		private var _smtpAuth:Boolean = false;
 		private var _userName:String = null;
 		private var _userPswd:String = null;
+		private var _timout:int = 5000;
 		
 		/**
 		 * HELOするときのホスト名
@@ -50,6 +74,7 @@ package com.coltware.airxmail.MailSender
 			client = new SMTPClient();
 			client.addEventListener(SMTPEvent.SMTP_ACCEPT_DATA,writeData);
 			client.addEventListener(SMTPEvent.SMTP_CONNECTION_FAILED,fireConnectionFailed);
+			client.addEventListener(JobEvent.JOB_IDLE_TIMEOUT,handlerIdleTimeout);
 		}
 		
 		/**
@@ -65,34 +90,44 @@ package com.coltware.airxmail.MailSender
 			key = key.toLowerCase();
 			var vstr:String;
 			var vbool:Boolean;
+			var vnum:Number;
 			log.debug("set param " + key + " => " + value);
 			switch(key){
-				case "host":
+				case HOST:
 					client.host = String(value); 
 					break;
-				case "port":
-					client.port = parseInt(String(value));
+				case PORT:
+					if(value is String){
+						client.port = parseInt(String(value));
+					}
+					else{
+						vnum = value as Number;
+						if(vnum){
+							client.port = vnum;
+						}
+					}
+					
 					break;
-				case "auth":
+				case AUTH:
 					vstr = value as String;
 					vbool = value as Boolean;
 					if(vbool || ( vstr && vstr.toLowerCase() == "true")){
 						this._smtpAuth = true;
 					}
 					break;
-				case "username":
+				case USERNAME:
 					vstr = value as String;
 					if(vstr){
 						this._userName = vstr;
 					}
 					break;
-				case "password":
+				case PASSWORD:
 					vstr = value as String;
 					if(vstr){
 						this._userPswd = vstr;
 					}
 					break;
-				case "ssl":
+				case SSL:
 					vstr = value as String;
 					vbool = value as Boolean;
 					if(vbool || ( vstr && vstr.toLowerCase() == "true")){
@@ -101,7 +136,7 @@ package com.coltware.airxmail.MailSender
 						client.socketObject = obj;
 					}
 					break;
-				case "socket":
+				case SOCKET_OBJECT:
 					if(value is String){
 						var clz:Class = getDefinitionByName(String(value)) as Class;
 						var obj:Object = new clz();
@@ -112,31 +147,37 @@ package com.coltware.airxmail.MailSender
 						client.socketObject = value;
 					}
 					break;
-				case "myhostname":
+				case MYHOSTNAME:
 					this._myhost = String(value);
+					break;
+				case IDLE_TIMEOUT:
+					vnum = value as Number;
+					if(vnum){
+						client.setIdleTimeout(vnum);
+					}
 					break;
 			}
 		}
 		/**
-		 * メールを送信する.
+		 * send mail
 		 * 
 		 * 大量に送信することは想定されておらず、１回１回、接続をする
 		 * 
 		 */ 
 		public function send(message:MimeMessage, ... args):void{
 			log.info("[start] msg send"); 
+			
 			this.currentMessage = message;
 			if(!client.isConnected){
 				log.debug("connect ... ");
 				client.connect();
 				client.ehlo(this._myhost);
+				
+				if(_smtpAuth){
+					client.setAuth(_userName,_userPswd);
+				}
 			}
 			var i:int;
-			
-			//  認証が必要ならする
-			if(_smtpAuth){
-				client.setAuth(_userName,_userPswd);
-			}
 			
 			//  MAIL FROM:
 			var envelopFrom:String = message.fromInetAddress.address;
@@ -153,11 +194,16 @@ package com.coltware.airxmail.MailSender
 				client.rcptTo(rcpts[i].address);
 			}
 			client.dataAsync();
-			
+		}
+		
+		public function close():void{
+			if(client.isConnected){
+				client.quit();
+			}
 		}
 		
 		/**
-		 *   データを書き込む
+		 *   write data
 		 */
 		private function writeData(e:SMTPEvent):void{
 			var sock:Object = e.$sock;
@@ -167,7 +213,6 @@ package com.coltware.airxmail.MailSender
 			this.currentMessage.writeBodySource(IDataOutput(sock));
 			sock.writeUTFBytes("\r\n.\r\n");
 			sock.flush();
-			client.quit();
 		}
 		
 		/**
@@ -179,8 +224,14 @@ package com.coltware.airxmail.MailSender
 			this.dispatchEvent(event);
 		}
 		
-		
-		
+		/**
+		 * @private
+		 */
+		private function handlerIdleTimeout(e:JobEvent):void{
+			if(client.isConnected){
+				client.quit();
+			}
+		}
 
 	}
 }
