@@ -100,14 +100,20 @@ package com.coltware.airxmail
 	 	 * 
 	 	 */ 
 		public static function encodeMimeHeader(input:String,charset:String,insertNewLines:Boolean = true):String{
-			var ret:String = "=?" + charset +"?B?";
+			var ret:String = "";
 			var bytes:ByteArray = new ByteArray();
-			bytes.writeMultiByte(input,charset.toLowerCase());
-			var encoder:Base64Encoder = new Base64Encoder();
-			encoder.insertNewLines = insertNewLines;
-			encoder.encodeBytes(bytes);
-			ret += encoder.toString();
-			ret += "?=";
+			if(charset){
+				ret += "=?" + charset +"?B?";
+				bytes.writeMultiByte(input,charset.toLowerCase());
+				var encoder:Base64Encoder = new Base64Encoder();
+				encoder.insertNewLines = insertNewLines;
+				encoder.encodeBytes(bytes);
+				ret += encoder.toString();
+				ret += "?=";
+			}
+			else{
+				ret += input;
+			}
 			return ret;
 		}
 		
