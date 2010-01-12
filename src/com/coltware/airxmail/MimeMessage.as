@@ -57,6 +57,9 @@ package com.coltware.airxmail
 			if(headerCharset){
 				this._defaultCharset = headerCharset;
 			}
+			else{
+				this._defaultCharset = AirxMailConfig.DEFAULT_HEADER_CHARSET;
+			}
 			//  送信用
 			$toRcpts = new Array();
 			$ccRcpts = new Array();
@@ -64,10 +67,13 @@ package com.coltware.airxmail
 			
 			$attachements = new Array();
 		}
-		
-		public function set headerCharset(v:String):void{
-			this._defaultCharset = v;
-		}
+		/*
+		* Use AirxMailConfig.setDefaultCharset()
+		*
+		* public function set headerCharset(v:String):void{
+		*	this._defaultCharset = v;
+		* }
+		*/
 		
 		public function setStoreId(storeId:String):void{
 			this._uid = storeId;
