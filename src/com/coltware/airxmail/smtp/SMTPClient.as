@@ -152,6 +152,7 @@ package com.coltware.airxmail.smtp
 		public function helo(myhost:String):void{
 			var cmd:Object = new Object;
 			cmd.key = "HELO";
+			cmd.type = 0;
 			cmd.value = myhost;
 			this.addJob(cmd);
 		}
@@ -222,7 +223,7 @@ package com.coltware.airxmail.smtp
 			var cmd2:Object = new Object();
 			cmd2.type = 2;
 			cmd2.key = "DATA";
-			cmd2.value = data + "\r\n.\r\n";
+			cmd2.value = data + "\r\n.";
 			this.addJob(cmd2);
 		}
 		
