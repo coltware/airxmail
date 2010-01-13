@@ -23,7 +23,7 @@ smtpClient.data(mailText);
 smtpClient.quit();
 }}}
 
-*Base Usage Part2*
+*Basic Usage Part2*
 {{{
 :
 //smtpClient.data(mailText);
@@ -40,12 +40,16 @@ private function writeData(e:SMTPEvent):void{
 	sock.writeUTFBytes("Subject: this is test\r\n");
 	sock.writeUTFBytes("\r\n");
 	sock.writeUTFBytes("this is data");			
+	// *MUST* needs following steps
+	sock.writeUTFBytes("\r\n.\r\n");
+	sock.flush();
 }
 }}}
 
 == Sender API ==
 
+undocumented...
 
-= Reciver API =
+= Reciver(POP3) API =
 
 undocumented...
