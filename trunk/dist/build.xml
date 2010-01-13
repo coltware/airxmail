@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="fxmail" basedir="..">
+<project name="airxmail" basedir="..">
 	<!-- FLEX SDKの設定 -->
 	<!--  ******* 以下　環境に合わせて書き直すこと ************* -->
 	
-	<!-- 
-		SDKの場所を指定
-		(自動でとれないかな）
-	-->
-	<property name="FLEX_SDK" value="C:\Program Files\Adobe\Flex Builder 3\sdks\3.2.0" />
+	<property name="REVISION" value="15" />
+	<property name="FLEX_SDK" value="C:\Flex\sdk\3.4" />
+	<property name="FLEX_HOME" value="${FLEX_SDK}" />
 	<property name="PRJ_ROOT" value="${basedir}/../" />
-	<!-- 
-		注意）
-		Flash Verison 10 の場合にはflex-configの自作が必要
-		ただし、中で呼んでいるライブラリが相対パスになっているみたいで、全部移すのが面倒なので同じ階層に作成してしまう。 
-	-->
+	
 	<property name="load-config" value="-load-config '${FLEX_SDK}/frameworks/air-config.xml'" />
-	<!-- <property name="load-config" value="-load-config '${FLEX_SDK}/frameworks/flex-config.xml'" /> -->
 	
 	<!-- ソースのディレクトリ -->
 	<property name="SRC_PATH" value="${basedir}/src ${PRJ_ROOT}/commons/src" />
 	
 	<property name="FLEX_ANT" value="${FLEX_SDK}/ant/lib" />
 	<property name="FLEX_BIN" value="${FLEX_SDK}/bin" />
-	
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_SDK}/ant/lib/flexTasks.jar"></taskdef>
 	<!-- 
 	**********************************************************************
 	ASDOC のための設定 
@@ -41,6 +34,15 @@
 			<arg line="-source-path ${SRC_PATH} -doc-sources ${SRC_PATH} -output ${ASDOC_DIR} ${load-config}"/>
 			<env key="JAVA_HOME" value="${java.home}"/>
 		</exec>
+	</target>
+	
+	<target name="compc">
+		<compc output="dist/coltware_airxmail_r${REVISION}.swc">
+			<load-config filename="${FLEX_SDK}/frameworks/air-config.xml" />
+			<source-path path-element="${basedir}/src" />
+			<include-sources dir="${basedir}/src" includes="*" />
+			<include-libraries file="${basedir}/libs" />
+		</compc>
 	</target>
 	
 	<target name="clean">
