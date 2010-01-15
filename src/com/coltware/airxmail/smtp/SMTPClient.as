@@ -129,10 +129,6 @@ package com.coltware.airxmail.smtp
 			this._enableAuth = true;
 		}
 		
-		public function setIdleTimeout(msec:int):void{
-			this._idleTimeout = msec;
-		}
-		
 		/**
 		 * 接続された状態か?
 		 */
