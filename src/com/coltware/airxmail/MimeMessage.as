@@ -257,6 +257,7 @@ package com.coltware.airxmail
 		override public function get bodyText():String{
 			var ct:ContentType = this.contentType;
 			log.debug("get bodyType : " + ct.getMainType());
+			var _target:MimeBodyPart = null;
 			if(ct.getMainType() == BODY_TYPE_MULTIPART){
 				var children:Array = partChildren;
 				log.debug("get bodyText : " + children.length);
@@ -266,8 +267,16 @@ package com.coltware.airxmail
 					var child:MimeBodyPart = children[i];
 					ct = child.contentType;
 					if(ct.isText()){
-						return child.bodyText;
+						if(ct.getSubStype() == "plain"){
+							return child.bodyText;
+						}
+						else{
+							_target = child;
+						}
 					}
+				}
+				if(_target){
+					return _target.bodyText;
 				}	
 			}
 			return super.bodyText;
