@@ -8,8 +8,9 @@
  */
 package com.coltware.airxmail
 {
-	import com.coltware.commons.utils.StringLineReader;
 	import com.coltware.airxmail_internal;
+	import com.coltware.commons.utils.DateUtils;
+	import com.coltware.commons.utils.StringLineReader;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
@@ -270,7 +271,7 @@ package com.coltware.airxmail
 							mimeMsg.setFrom(fromAddr);
 						}
 						else if(_key == "date"){
-							mimeMsg.setDate(new Date(Date.parse(_val)));
+							mimeMsg.setDate(new Date(DateUtils.strToTime(_val,"r")));
 						}
 						else{
 							mimeHeader = new MimeHeader();
