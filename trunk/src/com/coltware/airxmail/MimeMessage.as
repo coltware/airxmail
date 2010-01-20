@@ -285,21 +285,10 @@ package com.coltware.airxmail
 		/**
 		 *  シングルパートで単純にテキストを設定する場合
 		 */
-		public function setTextBody(body:String,ct:ContentType = null):void{
+		public function setTextBody(body:String):void{
 			$bodySource = new ByteArray();
 			var _charset:String;
-			if(ct != null){
-				this.contentType = ct;
-			}
-			else{
-				this.contentType = new ContentType();
-				this.contentType.setMainType("text");
-				this.contentType.setSubStype("plain");
-				_charset = AirxMailConfig.DEFAULT_BODY_CHARSET;
-				if(_charset){
-					this.contentType.setParameter("charset",_charset);
-				}
-			}
+			
 			if($__debug__) log.debug("content-type " + this.contentType.getValue());
 			_charset = this.contentType.getParameter("charset");
 			if(_charset == null || _charset.length < 1 ){

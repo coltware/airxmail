@@ -28,11 +28,11 @@ package com.coltware.airxmail
 		/**
 		 *  multipart/mixed
 		 */
-		public static const MULTIPART_MIXED:String = "multpart/mixed";
+		private static const L_MULTIPART_MIXED:String = "multpart/mixed";
 		/**
 		 *  multipart/alternative
 		 */
-		public static const MULTIPART_ALTERNATIVE:String = "multipart/alternative";
+		private static const L_MULTIPART_ALTERNATIVE:String = "multipart/alternative";
 		
 		private var _mainType:String ;
 		private var _subType:String;
@@ -42,6 +42,14 @@ package com.coltware.airxmail
 		public function ContentType()
 		{
 			this.key = "content-type";
+		}
+		
+		public static function get MULTIPART_MIXED():ContentType{
+			return newInstance(L_MULTIPART_MIXED);
+		}
+		
+		public static function get MULTIPART_ALTERNATIVE():ContentType{
+			return newInstance(L_MULTIPART_ALTERNATIVE);
 		}
 		
 		/**
@@ -166,10 +174,10 @@ package com.coltware.airxmail
 		
 		public static function newInstance(type:String,args:String = null):ContentType{
 			var ct:ContentType;
-			if(type == ContentType.MULTIPART_MIXED || type == ContentType.MULTIPART_ALTERNATIVE){
+			if(type == ContentType.L_MULTIPART_MIXED || type == ContentType.L_MULTIPART_ALTERNATIVE){
 				ct = new ContentType();
 				ct._mainType = "multipart";
-				if(type == ContentType.MULTIPART_MIXED){
+				if(type == ContentType.L_MULTIPART_MIXED){
 					ct._subType  = "mixed";
 				}
 				else{
