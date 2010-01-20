@@ -14,6 +14,7 @@ package com.coltware.airxmail
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
+	
 	use namespace airxmail_internal;
 	
 	public class MimeTextPart extends MimeBodyPart
@@ -26,6 +27,10 @@ package com.coltware.airxmail
 			if(ct == null){
 				this.contentType = new ContentType();
 				this.contentType.setMainType("text");
+				var charset:String = AirxMailConfig.DEFAULT_BODY_CHARSET;
+				if(charset){
+					this.contentType.setParameter("charset",charset);
+				}
 			}
 		}
 		public function get charset():String{
@@ -36,15 +41,21 @@ package com.coltware.airxmail
 			this.contentType.setParameter("charset",str);
 		}
 		
+		public function setText(body:String):void{
+			this.setBodyText(body,"plain");
+		}
+		
+		public function setHtmlText(body:String):void{
+			this.setBodyText(body,"html");
+		}
+		
 		/**
 		 *  シングルパートで単純にテキストを設定する場合
 		 */
-		public function setTextBody(body:String,ct:ContentType = null):void{
+		protected function setBodyText(body:String,subtype:String):void{
 			$bodySource = new ByteArray();
-			if(ct != null){
-				this.contentType = ct;
-			}
 			log.debug("content-type " + this.contentType.getValue());
+			this.contentType.setSubStype(subtype);
 			var _charset:String = this.contentType.getParameter("charset");
 			if(_charset == null || _charset.length < 1 ){
 				_charset = AirxMailConfig.DEFAULT_BODY_CHARSET;

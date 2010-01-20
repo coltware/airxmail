@@ -62,24 +62,13 @@ package com.coltware.airxmail
 			this._partChildren.push(part);
 		}
 		
-		/**
-		 *  text/plain の子パートを新規に作成する
-		 * 
-		 */
-		public function createTextPlainPart(charset:String = null,transferEnc:String = "7bit"):MimeTextPart{
-			var part:MimeTextPart = new MimeTextPart();
-			part.contentType.setSubStype("plain");
-			if(charset){
-				part.contentType.setParameter("charset",charset);
-			}
-			part.transferEncoding = transferEnc;
-			this.addChildPart(part);
-			return part;
-		}
 		
-		public function createTextHtmlPart(charset:String = null,transferEnc:String = "7bit"):MimeTextPart{
+		/**
+		 *  create child part ( text/plain or text/html part )
+		 *
+		 */
+		public function createTextPart(charset:String = null,transferEnc:String = "7bit"):MimeTextPart{
 			var part:MimeTextPart = new MimeTextPart();
-			part.contentType.setSubStype("html");
 			if(charset){
 				part.contentType.setParameter("charset",charset);
 			}
