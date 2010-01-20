@@ -3,7 +3,7 @@
 	<!-- FLEX SDKの設定 -->
 	<!--  ******* 以下　環境に合わせて書き直すこと ************* -->
 	
-	<property name="REVISION" value="15" />
+	<property name="REVISION" value="23" />
 	<property name="FLEX_SDK" value="C:\Flex\sdk\3.4" />
 	<property name="FLEX_HOME" value="${FLEX_SDK}" />
 	<property name="PRJ_ROOT" value="${basedir}/../" />
