@@ -21,7 +21,7 @@ package com.coltware.airxmail
 	
 	public class MimeBinaryPart extends MimeBodyPart
 	{
-		private var _transferEncording:String = "base64";
+		private var _contentDisposition:MimeHeader;
 		
 		public function MimeBinaryPart(ct:ContentType=null)
 		{
@@ -32,6 +32,14 @@ package com.coltware.airxmail
 				this.contentType.setSubStype("octet-stream");
 			}
 			this.transferEncoding = "base64";
+			_contentDisposition = new MimeHeader();
+			_contentDisposition.key = "Content-Disposition";
+			_contentDisposition.value = "attachment";
+			this.addHeader(_contentDisposition);
+		}
+		
+		public function get contentDisposition():MimeHeader{
+			return this._contentDisposition;
 		}
 		
 		public function setAttachementFile(file:File,filename:String = null):void{
@@ -49,6 +57,7 @@ package com.coltware.airxmail
 					filename = MimeUtils.encodeMimeHeader(filename,charset);
 				}
 				this.contentType.setParameter("name",filename);
+				this.contentDisposition.setParameter("filename",filename);
 			}
 		}
 	}

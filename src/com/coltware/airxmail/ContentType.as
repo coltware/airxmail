@@ -123,6 +123,9 @@ package com.coltware.airxmail
 			var p:Array = new Array();
 			for(var key:String in _params){
 				var str:String = key + "=\"" + _params[key] + "\"";
+				if(key != "charset"){
+					str = "\r\n\t" + str;
+				}
 				//str = "\n\t" + str;
 				p.push(str);
 			}

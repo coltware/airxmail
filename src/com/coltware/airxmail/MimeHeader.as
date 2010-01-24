@@ -81,6 +81,15 @@ package com.coltware.airxmail
 			}
 		}
 		
+		public function toString():String{
+			var ret:String = key + ": " + value + ";\r\n";
+			for(var _k:String in _params){
+				if(_params[_k])
+					ret += "\t" + _k + "=\"" + _params[_k] + "\"\r\n";
+			}
+			return ret;
+		}
+		
 		public function dumpLog():void{
 			log.debug(_org + " -> header is [" + key + "]=" + value);
 			for(var key:String in _params){
