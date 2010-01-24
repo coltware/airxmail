@@ -197,9 +197,7 @@ package com.coltware.airxmail.MailSender
 		}
 		
 		public function close():void{
-			if(client.isConnected){
-				client.quit();
-			}
+			client.quit();
 		}
 		
 		/**
