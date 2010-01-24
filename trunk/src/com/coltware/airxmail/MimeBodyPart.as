@@ -10,8 +10,8 @@ package com.coltware.airxmail
 {
 	import __AS3__.vec.Vector;
 	
-	import com.coltware.commons.utils.StringLineReader;
 	import com.coltware.airxmail_internal;
+	import com.coltware.commons.utils.StringLineReader;
 	
 	import flash.events.EventDispatcher;
 	import flash.utils.*;
@@ -215,6 +215,14 @@ package com.coltware.airxmail
 			this._headerKeys[key] = header;
 			this._headers.push(header);
 		}
+		
+		public function addHeaderKeyValue(key:String,value:String):void{
+			var header:MimeHeader = new MimeHeader();
+			header.key = key;
+			header.value = value;
+			this.addHeader(header);
+		}
+		
 		/**
 		 *  ヘッダを取得する
 		 */
@@ -225,6 +233,16 @@ package com.coltware.airxmail
 			}
 			else{
 				return null;
+			}
+		}
+		
+		public function hasHeader(key:String):Boolean{
+			key = key.toLowerCase();
+			if(this._headerKeys[key]){
+				return true;
+			}
+			else{
+				return false;
 			}
 		}
 		
@@ -245,14 +263,23 @@ package com.coltware.airxmail
 			var line:String;
 			var __ct:String = "Content-Type: " + this.contentType.getValue();
 			output.writeUTFBytes(__ct + "\r\n");
-			line = "Content-Transfer-Encoding: " + $transferEncoding;
-			output.writeUTFBytes(line + "\r\n");
 			
+			var cte:String = "Content-Transfer-Encoding";
+			if(this.hasHeader(cte)){
+				output.writeUTFBytes(this.getHeader(cte).toString());
+			}
+			else{
+				line = cte + ": " + $transferEncoding;
+				output.writeUTFBytes(line + "\r\n");
+			}
+			for(var key:String in _headerKeys){
+				var mimeHead:MimeHeader = this.getHeader(key);
+				output.writeUTFBytes(mimeHead.toString());
+			}
 		}
 		
 		airxmail_internal function writeBodySource(output:IDataOutput):void{
 			$bodySource.position = 0;
-			log.debug("writeBodySource [single part]" + $bodySource.bytesAvailable);
 			
 			if($transferEncoding.toLowerCase() == "base64"){
 				var enc:Base64Encoder = new Base64Encoder();
