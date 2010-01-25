@@ -16,6 +16,8 @@ package com.coltware.airxmail.MailSender
 	import com.coltware.commons.job.JobEvent;
 	
 	import flash.events.EventDispatcher;
+	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.utils.IDataOutput;
 	import flash.utils.getDefinitionByName;
 	
@@ -23,6 +25,27 @@ package com.coltware.airxmail.MailSender
 	import mx.logging.Log;
 	
 	use namespace airxmail_internal;
+	
+	/**
+	 *  @eventType flash.events.IOErrorEvent.IO_ERROR
+	 */
+	[Event(name="ioError",type="flash.events.IOErrorEvent")]
+	/**
+	 *  @eventType flash.events.SecurityErrorEvent.SECURITY_ERROR
+	 */
+	[Event (name="securityError",type="flash.events.SecurityErrorEvent")]
+	
+	/**
+	 *  SMTPレベルで接続ができなかったときのイベント.
+	 *  Can *NOT* connect SMTP Connection. ( Not TCP Connection )
+	 * 
+	 * メモ：Socketベースではありません。HELOもしくはEHLOを投げてエラーとなったときに発行されます。
+	 * ただし、EHLOでESMTPをサポートしていないエラーはここに含まれません。
+	 * 
+	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.SMTP_CONNECTION_FAILED
+	 */
+	[Event(name="smtpConnectionFailed",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
 	
 	/**
 	 *  MimeMessageオブジェクトからSMTPでメールを送信するためのクラス
@@ -73,8 +96,12 @@ package com.coltware.airxmail.MailSender
 		{
 			client = new SMTPClient();
 			client.addEventListener(SMTPEvent.SMTP_ACCEPT_DATA,writeData);
-			client.addEventListener(SMTPEvent.SMTP_CONNECTION_FAILED,fireConnectionFailed);
+			//client.addEventListener(SMTPEvent.SMTP_CONNECTION_FAILED,fireConnectionFailed);
 			client.addEventListener(JobEvent.JOB_IDLE_TIMEOUT,handlerIdleTimeout);
+		}
+		
+		override public function addEventListener(type:String, listener:Function, useCapture:Boolean=false, priority:int=0, useWeakReference:Boolean=false):void{
+			client.addEventListener(type,listener,useCapture,priority,useWeakReference);
 		}
 		
 		/**
