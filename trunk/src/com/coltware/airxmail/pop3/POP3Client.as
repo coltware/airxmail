@@ -8,9 +8,9 @@
  */
 package com.coltware.airxmail.pop3
 {
+	import com.coltware.airxmail.MailParser;
 	import com.coltware.commons.job.SocketJobSync;
 	import com.coltware.commons.utils.StringLineReader;
-	import com.coltware.airxmail.MailParser;
 	
 	import flash.events.IEventDispatcher;
 	import flash.events.ProgressEvent;
@@ -31,6 +31,19 @@ package com.coltware.airxmail.pop3
 	[Event(name="pop3ResultRetr",type="com.coltware.airxmail.pop3.POP3Event")]
 	[Event(name="pop3DeleteOk",type="com.coltware.airxmail.pop3.POP3Event")]
 	[Event(name="pop3NoopOk",type="com.coltware.airxmail.pop3.POP3Event")]
+	
+	/**
+	 *  POP3 Auth OK
+	 * 
+	 * @eventType com.coltware.airxmail.pop3.POP3Event.POP3_AUTH_OK;
+	 */
+	[Event(name="pop3AuthOk",type="com.coltware.airxmail.pop3.POP3Event")]
+	/**
+	 *  POP3 Auth NG
+	 * 
+	 * @eventType com.coltware.airxmail.pop3.POP3Event.POP3_AUTH_NG;
+	 */
+	[Event(name="pop3AuthNg",type="com.coltware.airxmail.pop3.POP3Event")]
 
 	public class POP3Client extends SocketJobSync
 	{
@@ -212,6 +225,9 @@ package com.coltware.airxmail.pop3
 					}
 					else{
 						// @TODO 認証に失敗したときのエラーを投げる
+						var authNgEvent:POP3Event = new POP3Event(POP3Event.POP3_AUTH_NG);
+						authNgEvent.client = this;
+						this.dispatchEvent(authNgEvent);
 					}
 				}
 				else if(cmd == DO_STAT){
