@@ -9,6 +9,7 @@
 <classEntry path="com.coltware.airxmail.MailFolder.POP3Folder"/>
 <classEntry path="com.coltware.airxmail.MailParser"/>
 <classEntry path="com.coltware.airxmail.MailSender.SMTPSender"/>
+<classEntry path="com.coltware.airxmail.MimeBinaryPart"/>
 <classEntry path="com.coltware.airxmail.MimeBodyPart"/>
 <classEntry path="com.coltware.airxmail.MimeHeader"/>
 <classEntry path="com.coltware.airxmail.MimeImagePart"/>
