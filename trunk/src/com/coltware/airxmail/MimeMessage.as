@@ -254,6 +254,36 @@ package com.coltware.airxmail
 		}
 		
 		
+		public function findParts(type:String):Array{
+			var sub:String = null;
+			var pos:int = type.indexOf("/");
+			if(pos){
+				sub = type.substr(pos+1);
+				if(sub == "*"){
+					sub = null;
+				}
+				type = type.substr(0,pos);
+			}
+			var ret:Array = new Array();
+			if(this.contentType.isMultipart()){
+				var len:int = partChildren.length;
+				for(var i:int = 0; i<len; i++){
+					var msg:MimeBodyPart = partChildren[i] as MimeBodyPart;
+					if(msg.contentType.getMainType() == type){
+						if(sub != null){
+							if(msg.contentType.getSubStype() == sub ){
+								ret.push(msg);
+							}
+						}
+						else{
+							ret.push(msg);
+						}
+					}
+				}
+			}
+			return ret;
+		}
+		
 		override public function get bodyText():String{
 			var ct:ContentType = this.contentType;
 			log.debug("get bodyType : " + ct.getMainType());
@@ -290,6 +320,11 @@ package com.coltware.airxmail
 			var _charset:String;
 			
 			if($__debug__) log.debug("content-type " + this.contentType.getValue());
+			
+			if(this.contentType == null){
+				this.contentType = this.createDefaultContentType();
+			}
+			
 			_charset = this.contentType.getParameter("charset");
 			if(_charset == null || _charset.length < 1 ){
 				$bodySource.writeUTFBytes(body);
@@ -374,6 +409,17 @@ package com.coltware.airxmail
 			ret += " =================================================== \n";
 			*/
 			return ret;
+		}
+		
+		private function createDefaultContentType():ContentType{
+			var ct:ContentType = new ContentType();
+			ct.setMainType("text");		
+			ct.setSubStype("plain");		
+			var _charset:String = AirxMailConfig.DEFAULT_BODY_CHARSET;		
+			if(_charset){		
+				ct.setParameter("charset",_charset);		
+			}
+			return ct;
 		}
 	}
 }
