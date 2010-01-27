@@ -26,9 +26,15 @@ package com.coltware.airxmail.pop3
 	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
 	
 	[Event(name="pop3ResultStat",type="com.coltware.airxmail.pop3.POP3Event")]
-	[Event(name="pop3ResultList",type="com.coltware.airxmail.pop3.POP3Event")]
-	[Event(name="pop3ResultUidl",type="com.coltware.airxmail.pop3.POP3Event")]
-	[Event(name="pop3ResultRetr",type="com.coltware.airxmail.pop3.POP3Event")]
+	
+	[Event(name="pop3ResultList",type="com.coltware.airxmail.pop3.POP3ListEvent")]
+	[Event(name="pop3ResultUidl",type="com.coltware.airxmail.pop3.POP3ListEvent")]
+	
+	/**
+	 *  @eventType com.coltware.airxmail.pop3.POP3MessageEvent.POP3_MESSAGE
+	 */
+	[Event(name="pop3Message",type="com.coltware.airxmail.pop3.POP3MessageEvent")]
+	
 	[Event(name="pop3DeleteOk",type="com.coltware.airxmail.pop3.POP3Event")]
 	[Event(name="pop3NoopOk",type="com.coltware.airxmail.pop3.POP3Event")]
 	
@@ -53,6 +59,11 @@ package com.coltware.airxmail.pop3
 		private var _parser:MailParser;
 		
 		private var _clientId:String;
+		
+		private var _username:String;
+		private var _password:String;
+		
+		private var _parseBody:Boolean = true;
 		
 		/**
 		 * POP3におけるuserコマンド
@@ -91,8 +102,13 @@ package com.coltware.airxmail.pop3
 			this._clientId = UIDUtil.createUID();
 		}
 		
+		public function setAuth(user:String,pswd:String):void{
+			this._username = user;
+			this._password = pswd;
+		}
+		
 		public function connectAuth(user:String,pswd:String):void{
-			this.connect();
+			super.connect();
 			var job1:Object = new Object();
 			job1.key = DO_USER;
 			job1.value = user;
@@ -103,6 +119,22 @@ package com.coltware.airxmail.pop3
 			job2.value = pswd;
 			this.addJob(job2);
 		}
+		
+		override public function connect():void{
+			super.connect();
+			if(this._username){
+				var job1:Object = new Object();
+				job1.key = DO_USER;
+				job1.value = this._username;
+				this.addJob(job1);
+			
+				var job2:Object = new Object();
+				job2.key = DO_PASS;
+				job2.value = this._password;
+				this.addJob(job2);
+			}
+		}
+		
 		/**
 		 * このオブジェクトを識別するID
 		 */
@@ -239,9 +271,10 @@ package com.coltware.airxmail.pop3
 						var arr:Array = msg.split(" ");
 						var statEvent:POP3Event = new POP3Event(POP3Event.POP3_RESULT_STAT);
 						statEvent.client = this;
-						statEvent.result = new Object();
-						statEvent.result.total = arr[0];
-						statEvent.result.size = arr[1];
+						var statObj:Object = new Object();
+						statObj.total = arr[0];
+						statObj.size  = arr[1];
+						statEvent.result = statObj;
 						this.dispatchEvent(statEvent);
 					}
 					else{
@@ -275,10 +308,10 @@ package com.coltware.airxmail.pop3
 							if(line == "."){
 								var listEvent:POP3Event;
 								if(cmd == DO_LIST){
-									listEvent = new POP3Event(POP3Event.POP3_RESULT_LIST);	
+									listEvent = new POP3ListEvent(POP3ListEvent.POP3_RESULT_LIST);	
 								}
 								else{
-									listEvent = new POP3Event(POP3Event.POP3_RESULT_UIDL);
+									listEvent = new POP3ListEvent(POP3ListEvent.POP3_RESULT_UIDL);
 								}
 								listEvent.client = this;
 								listEvent.result = job.data;
@@ -332,7 +365,9 @@ package com.coltware.airxmail.pop3
 								if(_uid == null){
 									_uid = this.getUidByNumber(int(job.value));
 								}
-								_parser.parseStart(_uid);
+								if(_parseBody){
+									_parser.parseStart(_uid);
+								}
 								job.source = new ByteArray();
 							}
 						}
@@ -344,7 +379,12 @@ package com.coltware.airxmail.pop3
 								//  BODYの終了
 								var bodyEvent:POP3MessageEvent = new POP3MessageEvent(POP3MessageEvent.POP3_MESSAGE);
 								bodyEvent.client = this;
-								bodyEvent.result = _parser.parseEnd();
+								if(_parseBody){
+									bodyEvent.result = _parser.parseEnd();
+								}
+								else{
+									bodyEvent.result = null;
+								}
 								bodyEvent.octets = this._sizeMap[job.value];
 								bodyEvent.source = job.source;
 								this.dispatchEvent(bodyEvent);
