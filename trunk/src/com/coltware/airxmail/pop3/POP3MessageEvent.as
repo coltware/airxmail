@@ -17,7 +17,7 @@ package com.coltware.airxmail.pop3
 		}
 		
 		public function getMimeMessage():MimeMessage{
-			var msg:MimeMessage = result as MimeMessage;
+			var msg:MimeMessage = _result as MimeMessage;
 			return msg;
 		}
 		

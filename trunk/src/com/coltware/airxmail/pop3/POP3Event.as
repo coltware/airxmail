@@ -29,11 +29,16 @@ package com.coltware.airxmail.pop3
 		public static const POP3_COMMAND_ERROR:String = "pop3CommandError";
 		
 		public var client:POP3Client;
-		public var result:Object;
 		public var message:String;
+		protected var _result:Object;
+		
 		
 		public function POP3Event(type:String) {
 			super(type);
+		}
+		
+		public function set result(obj:Object):void{
+			_result = obj;
 		}
 	}
 
