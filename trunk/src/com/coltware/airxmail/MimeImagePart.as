@@ -8,7 +8,7 @@ package com.coltware.airxmail
 		{
 			super(ct);
 			this.contentType.setMainType("image");
-			this.contentType.setSubStype("jpeg");
+			this.contentType.setSubType("jpeg");
 		}
 		
 		
@@ -22,7 +22,7 @@ package com.coltware.airxmail
 				if(ext == "jpg"){
 					ext == "jpeg";
 				}
-				this.contentType.setSubStype(ext);
+				this.contentType.setSubType(ext);
 			}
 		}
 	}

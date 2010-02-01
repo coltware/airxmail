@@ -29,7 +29,7 @@ package com.coltware.airxmail
 			if(ct == null){
 				this.contentType = new ContentType();
 				this.contentType.setMainType("application");
-				this.contentType.setSubStype("octet-stream");
+				this.contentType.setSubType("octet-stream");
 			}
 			this.transferEncoding = "base64";
 			_contentDisposition = new MimeHeader();
