@@ -83,7 +83,7 @@ package com.coltware.airxmail
 		/**
 		 *  set sub type
 		 */
-		public function setSubStype(v:String):void{
+		public function setSubType(v:String):void{
 			this._subType = v;
 		}
 		
@@ -152,7 +152,7 @@ package com.coltware.airxmail
 				if(i==0){
 					var tmp1:Array = p[i].split("/");
 					ct.setMainType(tmp1[0]);
-					ct.setSubStype(tmp1[1]);
+					ct.setSubType(tmp1[1]);
 				}
 				else{
 					var key2:String = p[i];

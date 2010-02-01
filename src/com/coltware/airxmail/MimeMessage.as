@@ -414,7 +414,7 @@ package com.coltware.airxmail
 		private function createDefaultContentType():ContentType{
 			var ct:ContentType = new ContentType();
 			ct.setMainType("text");		
-			ct.setSubStype("plain");		
+			ct.setSubType("plain");		
 			var _charset:String = AirxMailConfig.DEFAULT_BODY_CHARSET;		
 			if(_charset){		
 				ct.setParameter("charset",_charset);		

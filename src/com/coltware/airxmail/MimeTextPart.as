@@ -55,7 +55,7 @@ package com.coltware.airxmail
 		protected function setBodyText(body:String,subtype:String):void{
 			$bodySource = new ByteArray();
 			log.debug("content-type " + this.contentType.getValue());
-			this.contentType.setSubStype(subtype);
+			this.contentType.setSubType(subtype);
 			var _charset:String = this.contentType.getParameter("charset");
 			if(_charset == null || _charset.length < 1 ){
 				_charset = AirxMailConfig.DEFAULT_BODY_CHARSET;
