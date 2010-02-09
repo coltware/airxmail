@@ -130,6 +130,10 @@ package com.coltware.airxmail
 					ret.writeByte(num);
 					i+=3;
 				}
+				else if( ch == "_"){
+					ret.writeUTFBytes(" ");
+					i++;
+				}
 				else{
 					ret.writeUTFBytes(ch);
 					i++;
