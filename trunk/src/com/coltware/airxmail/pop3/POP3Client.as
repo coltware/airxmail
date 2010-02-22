@@ -377,6 +377,15 @@ package com.coltware.airxmail.pop3
 							l = StringUtil.trim(line);
 							if(l == "."){
 								//  BODYの終了
+								var reader:StringLineReader = new StringLineReader();
+								buf.position = 0;
+								reader.source = buf;
+								var bodyLine:String;
+								while(bodyLine = reader.next()){
+									_parser.parseLine(bodyLine,reader);
+								}
+								buf.position = 0;
+								
 								var bodyEvent:POP3MessageEvent = new POP3MessageEvent(POP3MessageEvent.POP3_MESSAGE);
 								bodyEvent.client = this;
 								if(_parseBody){
@@ -391,7 +400,7 @@ package com.coltware.airxmail.pop3
 								this.commitJob();
 							}
 							else{
-								_parser.parseLine(line,_lineReader);
+								//_parser.parseLine(line,_lineReader);
 							} 
 						}
 						
