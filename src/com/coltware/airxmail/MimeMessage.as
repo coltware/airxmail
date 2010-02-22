@@ -228,6 +228,11 @@ package com.coltware.airxmail
 				return this._msgId;
 			}
 			var head:MimeHeader = getHeader("message-id");
+			if(head == null){
+				var tempId:String = this.createMessageId();
+				log.info("message id is not found , create temp message id : [" + tempId + "]");
+				return tempId;
+			}
 			var _val:String = head.value;
 			if(_val.charAt(0) == "<"){
 				this._msgId =  _val.substring(1,_val.length -1);
@@ -248,8 +253,13 @@ package com.coltware.airxmail
 		 * メッセージIDを作成する
 		 */
 		airxmail_internal function createMessageId():String{
-			var pos:int = this.$fromAddress.address.lastIndexOf("@");
-			this._msgId = UIDUtil.createUID() + this.$fromAddress.address.substring(pos);
+			if(this.$fromAddress){
+				var pos:int = this.$fromAddress.address.lastIndexOf("@");
+				this._msgId = UIDUtil.createUID() + this.$fromAddress.address.substring(pos);
+			}
+			else{
+				this._msgId = UIDUtil.createUID();
+			}
 			return this._msgId;
 		}
 		
