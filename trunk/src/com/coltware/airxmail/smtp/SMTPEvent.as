@@ -42,6 +42,8 @@ package com.coltware.airxmail.smtp
 		public static var SMTP_AUTH_NG:String = "smtpAuthNg";
 		public static var SMTP_AUTH_OK:String = "smtpAuthOk";
 		
+		public static var SMTP_SENT_OK:String = "smtpSentOk";
+		
 		/**
 		 *  NOOPコマンドがきちんと返ってきたとき
 		 * 
