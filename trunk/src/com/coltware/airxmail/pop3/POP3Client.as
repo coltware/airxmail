@@ -18,6 +18,8 @@ package com.coltware.airxmail.pop3
 	import flash.events.ProgressEvent;
 	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -46,6 +48,9 @@ package com.coltware.airxmail.pop3
 	
 	[Event(name="pop3DeleteOk",type="com.coltware.airxmail.pop3.POP3Event")]
 	[Event(name="pop3NoopOk",type="com.coltware.airxmail.pop3.POP3Event")]
+	
+	[Event(name="pop3ConnectOk",type="com.coltware.airxmail.pop3.POP3Event")]
+	[Event(name="pop3ConnectNg",type="com.coltware.airxmail.pop3.POP3Event")]
 	
 	/**
 	 *  POP3 Auth OK
@@ -100,6 +105,9 @@ package com.coltware.airxmail.pop3
 		
 		private var _octets:int = 0;
 		
+		private var _timeout_msec:int = 5000;
+		private var _timeout_uint:uint = 0;
+		
 		public function POP3Client(target:IEventDispatcher=null)
 		{
 			super(target);
@@ -128,6 +136,7 @@ package com.coltware.airxmail.pop3
 			job2.key = DO_PASS;
 			job2.value = pswd;
 			this.addJob(job2);
+			_timeout_uint = setTimeout(check_connect_timeout,5000);
 		}
 		
 		override public function connect():void{
@@ -144,6 +153,23 @@ package com.coltware.airxmail.pop3
 				job2.key = DO_PASS;
 				job2.value = this._password;
 				this.addJob(job2);
+			}
+			_timeout_uint = setTimeout(check_connect_timeout,_timeout_msec);
+		}
+		/**
+		 *  セッション中に止まってしまうことを防ぐ
+		 *  ただし、初めのconnectのみで有効 ( おもに、TLS/SSLなどを使わなければいけないのに使っていない場合の処置 )
+		 * 
+		 */
+		private function check_connect_timeout():void{
+			_timeout_uint = 0;
+			if(!isServiceReady){
+				// 接続だけができていたら、その接続を閉じてしまう
+				this.disconnect();
+				
+				var evt:POP3Event = new POP3Event(POP3Event.POP3_CONNECT_NG);
+				evt.$message = "connection timeout: " + _timeout_msec + " msec";
+				this.dispatchEvent(evt);
 			}
 		}
 		
@@ -437,6 +463,7 @@ package com.coltware.airxmail.pop3
 		 */
 		private function handleNotServiceReady(reader:StringLineReader):void{
 			log.debug("handleNotServiceReady :");
+			clearTimeout(_timeout_uint);
 			var line:String;
 			while(line = _lineReader.next()){
 				log.debug("[NO] " + line);
@@ -448,6 +475,7 @@ package com.coltware.airxmail.pop3
 			var e:POP3Event;
 			if(this.isServiceReady){
 				e = new POP3Event(POP3Event.POP3_CONNECT_OK);
+				
 			}
 			else{
 				e = new POP3Event(POP3Event.POP3_CONNECT_NG);
