@@ -117,6 +117,7 @@ package com.coltware.airxmail.pop3
 			this._uidMap = new Object();
 			this._sizeMap = new Object();
 			this._clientId = UIDUtil.createUID();
+			this._idleTimeout = 30000;
 		}
 		
 		public function setAuth(user:String,pswd:String):void{

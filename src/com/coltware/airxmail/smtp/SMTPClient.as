@@ -84,6 +84,7 @@ package com.coltware.airxmail.smtp
 	 */
 	[Event(name="smtpNoopOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
+	[Event(name="smtpSentOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	/**
 	 *  SMTP Client Class
 	 * 
@@ -122,6 +123,7 @@ package com.coltware.airxmail.smtp
 			super();
 			_lineReader = new StringLineReader();
 			this.port = 25;
+			this._idleTimeout = 30000;
 		}
 		
 		override public function connect():void{
@@ -448,6 +450,9 @@ package com.coltware.airxmail.smtp
 							}
 							else if(code == "250"){
 								this.commitJob();
+								var sentEvent:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_SENT_OK);
+								sentEvent.$message = line;
+								this.dispatchEvent(sentEvent);
 							}
 						}
 					}
@@ -486,6 +491,11 @@ package com.coltware.airxmail.smtp
 							code = StringUtil.trim(code);
 							if(code == "250"){
 								this.commitJob();
+								if(cmd == "DATA" && this.currentJob.type == 2){
+									var sentOk:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_SENT_OK);
+									sentOk.$message = line;
+									this.dispatchEvent(sentOk);
+								}
 							}
 						}
 					}
