@@ -16,6 +16,8 @@ package com.coltware.airxmail.smtp
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.IDataInput;
+	import flash.utils.clearTimeout;
+	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -112,11 +114,37 @@ package com.coltware.airxmail.smtp
 		 */
 		private var CMD_TYPE_AUTH_SESS:int  = 200;
 		
+		private var _timeout_msec:int = 5000;
+		private var _timeout_uint:int = 0;
+		
 		public function SMTPClient()
 		{
 			super();
 			_lineReader = new StringLineReader();
 			this.port = 25;
+		}
+		
+		override public function connect():void{
+			super.connect();
+			_timeout_uint = setTimeout(check_connect_timeout,_timeout_msec);
+		}
+		
+		/**
+		 *  セッション中に止まってしまうことを防ぐ
+		 *  ただし、初めのconnectのみで有効 ( おもに、TLS/SSLなどを使わなければいけないのに使っていない場合の処置 )
+		 * 
+		 */
+		private function check_connect_timeout():void{
+			this.clearJobs();
+			_timeout_uint = 0;
+			if(!isServiceReady){
+				if(this.isConnected){
+					this.disconnect();
+				}
+				var evt:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_CONNECTION_FAILED);
+				evt.$message = "connection timeout: " + _timeout_msec + " msec";
+				this.dispatchEvent(evt);
+			}
 		}
 		
 		/**
@@ -470,6 +498,7 @@ package com.coltware.airxmail.smtp
 			}
 			else{
 				log.debug("no ready...");
+				clearTimeout(_timeout_uint);
 				ret = _sock.readUTFBytes(_sock.bytesAvailable);
 				var readyCode:String = ret.substr(0,3);
 				if(readyCode == "220"){
