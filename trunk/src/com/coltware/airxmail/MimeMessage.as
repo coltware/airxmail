@@ -340,6 +340,9 @@ package com.coltware.airxmail
 				$bodySource.writeUTFBytes(body);
 			}
 			else{
+				if(_charset.toLowerCase() == "utf-8"){
+					this.$transferEncoding = "8bit";
+				}
 				$bodySource.writeMultiByte(body,_charset.toLowerCase());
 			}
 			if($__debug__) log.debug("setTextBody " + _charset + "/" + body.length + " " + $bodySource.length);
