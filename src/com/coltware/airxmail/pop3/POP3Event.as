@@ -9,9 +9,11 @@
 package com.coltware.airxmail.pop3
 {
 	
+	import com.coltware.airxmail.MailEvent;
+	
 	import flash.events.*;
 	
-	public class POP3Event extends Event {
+	public class POP3Event extends MailEvent {
 		
 		public static const POP3_CONNECT_OK:String = "pop3ConnectOk";
 		public static const POP3_CONNECT_NG:String = "pop3ConnectNg";
@@ -29,7 +31,6 @@ package com.coltware.airxmail.pop3
 		public static const POP3_COMMAND_ERROR:String = "pop3CommandError";
 		
 		public var client:POP3Client;
-		public var message:String;
 		protected var _result:Object;
 		
 		

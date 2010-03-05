@@ -46,6 +46,21 @@ package com.coltware.airxmail.MailSender
 	 */
 	[Event(name="smtpConnectionFailed",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
+	/**
+	 *  SMTP-AUTHで認証が失敗したときのイベント
+	 * 
+	 *  @eventType com.coltware.airxmail.smtp.SMTPEvent.SMTP_AUTH_NG
+	 */
+	[Event(name="smtpAuthNg",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	/**
+	 *  SMTP-AUTHで認証が成功したときのイベント
+	 * 
+	 *  @eventType com.coltware.airxmail.smtp.SMTPEvent.SMTP_AUTH_OK
+	 */
+	[Event(name="smtpAuthOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	
 	
 	/**
 	 *  MimeMessageオブジェクトからSMTPでメールを送信するためのクラス
