@@ -33,11 +33,15 @@ package com.coltware.airxmail
 		 *  "text/plain" -> "text/plain; charset=ISO-2022-JP" 
 		 */
 		public static function setDefaultBodyCharset(str:String):void{
-			_default_body_charset = str.toUpperCase();
+			if(str != null){
+				_default_body_charset = str.toUpperCase();
+			}
 		}
 		
 		public static function setDefaultHeaderCharset(str:String):void{
-			_default_header_charset = str.toUpperCase();
+			if(str != null){
+				_default_header_charset = str.toUpperCase();
+			}
 		}
 		
 		airxmail_internal static function get DEFAULT_BODY_CHARSET():String{
@@ -48,7 +52,7 @@ package com.coltware.airxmail
 				return "ISO-2022-JP";
 			}
 			else{
-				return null;
+				return "UTF-8";
 			}
 		}
 		
