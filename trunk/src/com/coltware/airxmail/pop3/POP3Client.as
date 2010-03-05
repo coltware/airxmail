@@ -9,10 +9,12 @@
 package com.coltware.airxmail.pop3
 {
 	import com.coltware.airxmail.MailParser;
+	import com.coltware.airxmail_internal;
 	import com.coltware.commons.job.SocketJobSync;
 	import com.coltware.commons.utils.StringLineReader;
 	
 	import flash.events.IEventDispatcher;
+	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
@@ -21,6 +23,13 @@ package com.coltware.airxmail.pop3
 	import mx.logging.Log;
 	import mx.utils.StringUtil;
 	import mx.utils.UIDUtil;
+	
+	use namespace airxmail_internal;
+	
+	/**
+	 * @eventType flash.events.IOErrorEvent.IO_ERROR
+	 */
+	[Event(name="ioError",type="flash.events.IOErrorEvent")]
 	
 	[Event(name="jobStackEmpty",type="com.coltware.commons.job.JobEvent")]
 	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
@@ -108,6 +117,7 @@ package com.coltware.airxmail.pop3
 		}
 		
 		public function connectAuth(user:String,pswd:String):void{
+			this.clearJobs();
 			super.connect();
 			var job1:Object = new Object();
 			job1.key = DO_USER;
@@ -121,6 +131,8 @@ package com.coltware.airxmail.pop3
 		}
 		
 		override public function connect():void{
+			this.clearJobs();
+			
 			super.connect();
 			if(this._username){
 				var job1:Object = new Object();
@@ -227,9 +239,15 @@ package com.coltware.airxmail.pop3
 				cmd = job.key;
 			}
 			log.debug("CMD>" + cmd);  
-			this._sock.writeUTFBytes(cmd +"\r\n");
-			this._sock.flush();
-			this._octets = 0;
+			if(this._sock.connected){
+				this._sock.writeUTFBytes(cmd +"\r\n");
+				this._sock.flush();
+				this._octets = 0;
+			}
+			else{
+				var evt:IOErrorEvent = new IOErrorEvent(IOErrorEvent.IO_ERROR);
+				this.dispatchEvent(evt);
+			}
 		}
 		
 		override protected function handleData(pe:ProgressEvent):void{
@@ -237,6 +255,7 @@ package com.coltware.airxmail.pop3
 			_lineReader.source = IDataInput(_sock);
 			var line:String = null;
 			if(this.isServiceReady){
+				
 				var job:Object = this.currentJob;
 				if(job == null){
 					log.warn("handleData [job is null]" + pe);
@@ -280,7 +299,7 @@ package com.coltware.airxmail.pop3
 					else{
 						//  @TODO 
 						errEvt = new POP3Event(POP3Event.POP3_COMMAND_ERROR);
-						errEvt.message = line;
+						errEvt.$message = line;
 						this.dispatchEvent(errEvt);
 						this.commitJob();
 					}
@@ -295,7 +314,7 @@ package com.coltware.airxmail.pop3
 					}
 					else{
 						errEvt = new POP3Event(POP3Event.POP3_COMMAND_ERROR);
-						errEvt.message = line;
+						errEvt.$message = line;
 						this.dispatchEvent(errEvt);
 						this.commitJob();
 					}
@@ -303,6 +322,7 @@ package com.coltware.airxmail.pop3
 				else if(cmd == DO_LIST || cmd == DO_UIDL ){
 					
 					while(line = _lineReader.next()){
+						log.debug(cmd + ">" + line);
 						line = StringUtil.trim(line);
 						if(job.result){
 							if(line == "."){
@@ -345,7 +365,7 @@ package com.coltware.airxmail.pop3
 								//  ERROR
 								var errEvent:POP3Event = new POP3Event(POP3Event.POP3_COMMAND_ERROR);
 								errEvent.client = this;
-								errEvent.message = line;
+								errEvent.$message = line;
 								this.dispatchEvent(errEvent);
 							}
 						}
@@ -416,6 +436,7 @@ package com.coltware.airxmail.pop3
 		 * 
 		 */
 		private function handleNotServiceReady(reader:StringLineReader):void{
+			log.debug("handleNotServiceReady :");
 			var line:String;
 			while(line = _lineReader.next()){
 				log.debug("[NO] " + line);
@@ -430,6 +451,7 @@ package com.coltware.airxmail.pop3
 			}
 			else{
 				e = new POP3Event(POP3Event.POP3_CONNECT_NG);
+				e.$message = line;
 			}
 			e.client = this;
 			this.dispatchEvent(e);

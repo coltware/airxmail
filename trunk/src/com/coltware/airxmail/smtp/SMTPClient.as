@@ -425,16 +425,30 @@ package com.coltware.airxmail.smtp
 					}
 					else if(this.currentJob.type == CMD_TYPE_AUTH_SESS){
 						//  認証中
+						var errmsg:String = "";
 						while(line = _lineReader.next()){
 							log.debug("[" + cmd +  "]:" + StringUtil.trim(line));
 							code = line.substr(0,4);
 							code = StringUtil.trim(code);
 							if(code == "334"){
+								// username:
 								this.commitJob();
 							}
 							else if(code == "235"){
 								this.commitJob();
+								var ok:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_AUTH_OK);
+								ok.$message = line;
+								this.dispatchEvent(ok);
 							}
+							else{
+								//  認証の失敗
+								errmsg += line;
+							}
+						}
+						if(errmsg.length > 0 ){
+							var ng:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_AUTH_NG);
+							ng.$message = errmsg;
+							this.dispatchEvent(ng);
 						}
 					}
 					else{
@@ -465,14 +479,11 @@ package com.coltware.airxmail.smtp
 				}
 				else{
 					var smtpConnFailedEvent:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_CONNECTION_FAILED,true);
+					smtpConnFailedEvent.$message = ret;
 					this.dispatchEvent(smtpConnFailedEvent);
 				}
 			}
 			
-		}
-		
-		override protected function ioerrorHandler(io:IOErrorEvent):void{
-			this.fireConnectionFailed();
 		}
 		
 		override protected function socketClosing(e:Event):void{

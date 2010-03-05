@@ -8,9 +8,8 @@
  */
 package com.coltware.airxmail.smtp
 {
+	import com.coltware.airxmail.MailEvent;
 	import com.coltware.airxmail_internal;
-	
-	import flash.events.Event;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -22,7 +21,7 @@ package com.coltware.airxmail.smtp
 	 * 
 	 * @see com.coltware.airxmail.smtp.SMTPClient
 	 */
-	public class SMTPEvent extends Event
+	public class SMTPEvent extends MailEvent
 	{
 		private static var log:ILogger = Log.getLogger("com.coltware.airxmail.smtp.SMTPEvent");
 		
@@ -39,6 +38,9 @@ package com.coltware.airxmail.smtp
 		 *  ESMTPの接続が失敗したとき
 		 */
 		public static var SMTP_NOT_SUPPORT_ESMTP:String = "smtpNotSupportEsmtp";
+		
+		public static var SMTP_AUTH_NG:String = "smtpAuthNg";
+		public static var SMTP_AUTH_OK:String = "smtpAuthOk";
 		
 		/**
 		 *  NOOPコマンドがきちんと返ってきたとき
