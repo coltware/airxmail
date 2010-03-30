@@ -45,7 +45,7 @@ package com.coltware.airxmail
 		//  ByteArray で管理されたヘッダ
 		protected var _rawHeaders:Object;
 		
-		public var _headerKeys:Object = new Object();
+		protected var _headerKeys:Object = new Object();
 		protected var headerSource:String;
 		
 		//  ログにヘッダ情報をダンプするか
@@ -234,6 +234,14 @@ package com.coltware.airxmail
 			else{
 				return null;
 			}
+		}
+		
+		public function getHeaderKyes():Array{
+			var list:Array = new Array();
+			for(var key:String in this._headerKeys){
+				list.push(key);
+			}
+			return list;
 		}
 		
 		public function hasHeader(key:String):Boolean{

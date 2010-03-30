@@ -161,7 +161,6 @@ package com.coltware.airxmail
 		}
 		
 		
-		
 		/**
 		 * 配信先を設定する
 		 */
@@ -190,6 +189,23 @@ package com.coltware.airxmail
 				$bccRcpts = addrs;
 			}
 		}
+		
+		public function getRecipients(type:String):Array{
+			if(type == RecipientType.TO){
+				return $toRcpts;
+			}
+			else if(type == RecipientType.CC){
+				return $ccRcpts;
+			}
+			else if(type == RecipientType.BCC){
+				return $bccRcpts;
+			}
+			// return empty array
+			var ret:Array = new Array();
+			return ret;
+		}
+		
+		
 		
 		
 		public function removeRcpt(type:String,addr:INetAddress):void{

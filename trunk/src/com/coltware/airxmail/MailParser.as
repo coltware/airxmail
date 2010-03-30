@@ -273,12 +273,12 @@ package com.coltware.airxmail
 						else if(_key == "date"){
 							mimeMsg.setDate(new Date(DateUtils.strToTime(_val,"r")));
 						}
-						else{
-							mimeHeader = new MimeHeader();
-							mimeHeader.key = _key;
-							mimeHeader.parse(_val);
-							mimeMsg.addHeader(mimeHeader);
-						}
+						
+						mimeHeader = new MimeHeader();
+						mimeHeader.key = _key;
+						mimeHeader.parse(_val);
+						mimeMsg.addHeader(mimeHeader);
+						
 					}
 					else{
 						mimeHeader = new MimeHeader();
