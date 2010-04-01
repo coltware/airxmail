@@ -420,7 +420,6 @@ package com.coltware.airxmail.pop3
 						}
 						else{
 							var buf:ByteArray = job.source as ByteArray;
-							buf.writeBytes(_lineReader.lastBytearray());
 							l = StringUtil.trim(line);
 							if(l == "."){
 								//  BODYの終了
@@ -447,6 +446,7 @@ package com.coltware.airxmail.pop3
 								this.commitJob();
 							}
 							else{
+								buf.writeBytes(_lineReader.lastBytearray());
 								//_parser.parseLine(line,_lineReader);
 							} 
 						}
