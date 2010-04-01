@@ -378,7 +378,8 @@ package com.coltware.airxmail
 			line = "Message-Id: <" + this.createMessageId() + ">";
 			output.writeUTFBytes(line + RN);
 			
-			line = "Date :" + DateUtils.dateToString("D, d M Y H:i:s +0900 (JST)");
+			
+			line = "Date:" + DateUtils.dateToString("r");
 			output.writeUTFBytes(line +RN);
 			
 			
