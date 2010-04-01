@@ -103,13 +103,31 @@ package com.coltware.airxmail
 			var ret:String = "";
 			var bytes:ByteArray = new ByteArray();
 			if(charset){
-				ret += "=?" + charset +"?B?";
+				var start:String = "=?" + charset +"?B?";
 				bytes.writeMultiByte(input,charset.toLowerCase());
 				var encoder:Base64Encoder = new Base64Encoder();
 				encoder.insertNewLines = insertNewLines;
 				encoder.encodeBytes(bytes);
-				ret += encoder.toString();
-				ret += "?=";
+				ret = encoder.toString();
+				var end:String = "?=";
+				
+				if(insertNewLines == true){
+					var p:Array = ret.split(String.fromCharCode(Base64Encoder.newLine));
+					var join:Array = new Array();
+					var i:int = 0;
+					for(i = 0; i<p.length; i++){
+						if(i==0){
+							join.push(start + p[i] + end);
+						}
+						else{
+							join.push("\t" + start + p[i] + end);
+						}
+					}
+					ret = join.join("\r\n");
+				}
+				else{
+					ret = start + ret + end;	
+				}
 			}
 			else{
 				ret += input;
