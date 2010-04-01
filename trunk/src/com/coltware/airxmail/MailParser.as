@@ -250,6 +250,7 @@ package com.coltware.airxmail
 				_cp  = _line.indexOf(":");
 				_key = _line.substr(0,_cp);
 				_key = _key.toLowerCase();
+				_key = StringUtil.trim(_key);
 				_val = _line.substring(_cp+1);
 				if(_key == "content-type"){
 					if($_debug) log.debug("content type value is " + _val);
