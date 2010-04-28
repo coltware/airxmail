@@ -3,8 +3,9 @@
 	<!-- FLEX SDKの設定 -->
 	<!--  ******* 以下　環境に合わせて書き直すこと ************* -->
 	
-	<property name="REVISION" value="23" />
-	<property name="FLEX_SDK" value="C:\Flex\sdk\3.4" />
+	<property name="REVISION" value="v48" />
+	<property name="VERSION" value="v0_5" />
+	<property name="FLEX_SDK" value="/usr/local/flex3.4" />
 	<property name="FLEX_HOME" value="${FLEX_SDK}" />
 	<property name="PRJ_ROOT" value="${basedir}/../" />
 	
@@ -30,7 +31,7 @@
 	*********************************************************************
 	-->
 	<target name="asdoc">
-		<exec executable="${FLEX_BIN}/asdoc.exe">
+		<exec executable="${FLEX_BIN}/asdoc">
 			<arg line="-source-path ${SRC_PATH} -doc-sources ${SRC_PATH} -output ${ASDOC_DIR} ${load-config}"/>
 			<env key="JAVA_HOME" value="${java.home}"/>
 		</exec>
@@ -38,6 +39,14 @@
 	
 	<target name="compc">
 		<compc output="dist/coltware_airxmail_r${REVISION}.swc">
+			<load-config filename="${FLEX_SDK}/frameworks/air-config.xml" />
+			<source-path path-element="${basedir}/src" />
+			<include-sources dir="${basedir}/src" includes="*" />
+			<include-libraries file="${basedir}/libs" />
+		</compc>
+	</target>
+	<target name="rel">
+		<compc output="dist/coltware_airxmail_${VERSION}.swc">
 			<load-config filename="${FLEX_SDK}/frameworks/air-config.xml" />
 			<source-path path-element="${basedir}/src" />
 			<include-sources dir="${basedir}/src" includes="*" />
