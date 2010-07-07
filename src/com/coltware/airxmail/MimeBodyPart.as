@@ -292,7 +292,17 @@ package com.coltware.airxmail
 			if($transferEncoding.toLowerCase() == "base64"){
 				var enc:Base64Encoder = new Base64Encoder();
 				enc.encodeBytes($bodySource,0,$bodySource.bytesAvailable);
-				output.writeUTFBytes(enc.toString());
+				var dataStr:String = enc.toString();
+				var fromChar:String = String.fromCharCode(Base64Encoder.newLine);
+				var lines:Array = dataStr.split(fromChar);
+				
+				var len:int = lines.length;
+				for(var i:int=0; i<len; i++){
+					output.writeUTFBytes(lines[i]);
+					if(i < len -1 ){ 
+						output.writeUTFBytes("\r\n");
+					}
+				}
 			}
 			else{
 				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
