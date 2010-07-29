@@ -8,6 +8,7 @@
  */
 package com.coltware.airxmail
 {
+	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
 	
 	import flash.utils.*;
@@ -15,6 +16,7 @@ package com.coltware.airxmail
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	import mx.utils.Base64Encoder;
+
 	use namespace airxmail_internal;
 	
 	/**
@@ -82,6 +84,16 @@ package com.coltware.airxmail
 			$bodySource.position = 0;
 			log.debug("writeBodySource [single part]" + $bodySource.bytesAvailable);
 			
+			var encoding:String = $transferEncoding.toLowerCase();
+			var enc:IEncoder = AirxMailConfig.getEncoder(encoding);
+			
+			if(enc){
+				enc.encodeBytes($bodySource,output);
+			}
+			else{
+				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
+			}
+			/*
 			if($transferEncoding == "base64"){
 				var enc:Base64Encoder = new Base64Encoder();
 				enc.encodeBytes($bodySource,0,$bodySource.bytesAvailable);
@@ -90,6 +102,7 @@ package com.coltware.airxmail
 			else{
 				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
 			}
+			*/
 			
 			if(this.contentType.isMultipart()){
 				//  マルチパートなので、子供のパートを記述していく

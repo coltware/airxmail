@@ -10,6 +10,7 @@ package com.coltware.airxmail
 {
 	import __AS3__.vec.Vector;
 	
+	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
 	import com.coltware.commons.utils.StringLineReader;
 	
@@ -289,6 +290,18 @@ package com.coltware.airxmail
 		airxmail_internal function writeBodySource(output:IDataOutput):void{
 			$bodySource.position = 0;
 			
+			var encoding:String = $transferEncoding.toLowerCase();
+			
+			var enc:IEncoder = AirxMailConfig.getEncoder(encoding);
+			
+			if(enc){
+				enc.encodeBytes($bodySource,output);
+			}
+			else{
+				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
+			}
+			
+			/*
 			if($transferEncoding.toLowerCase() == "base64"){
 				var enc:Base64Encoder = new Base64Encoder();
 				enc.encodeBytes($bodySource,0,$bodySource.bytesAvailable);
@@ -307,6 +320,7 @@ package com.coltware.airxmail
 			else{
 				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
 			}
+			*/
 		}
 	}
 }

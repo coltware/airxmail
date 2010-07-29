@@ -8,9 +8,12 @@
  */
 package com.coltware.airxmail
 {
+	import com.coltware.airxmail.encode.Base64;
+	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
 	
 	import flash.system.Capabilities;
+
 	use namespace airxmail_internal;
 	
 	/**
@@ -70,6 +73,13 @@ package com.coltware.airxmail
 		
 		airxmail_internal static function get DEBUG():Boolean{
 			return false;
+		}
+		
+		airxmail_internal static function getEncoder(type:String):IEncoder{
+			if(type == "base64"){
+				return new Base64();
+			}
+			return null;
 		}
 	}
 }
