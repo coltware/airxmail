@@ -50,6 +50,10 @@ package com.coltware.airxmail.smtp
 		 */
 		public static var SMTP_NOOP_OK:String = "smtpNoopOk";
 		
+		public static var SMTP_START_TLS:String = "smtpStartTls";
+		
+		
+		
 		airxmail_internal var $sock:Object;
 		
 		public function SMTPEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)

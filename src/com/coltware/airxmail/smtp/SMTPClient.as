@@ -85,6 +85,18 @@ package com.coltware.airxmail.smtp
 	[Event(name="smtpNoopOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
 	[Event(name="smtpSentOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	
+	/**
+	 *  HELO/EHLO コマンドの結果を取得する
+	 */
+	[Event(name="smtpHeloReuslt",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	/**
+	 *  STARTTLSのイベント
+	 */
+	[Event(name="smtpStartTls",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
 	/**
 	 *  SMTP Client Class
 	 * 
@@ -196,6 +208,19 @@ package com.coltware.airxmail.smtp
 			cmd.auto = autoESMTP;
 			this.addJob(cmd);
 		}
+		
+		/**
+		 *  STARTTLS Command 
+		 *
+		 */
+		public function starttls():void{
+			var cmd:Object = new Object();
+			cmd.key = "STARTTLS";
+			cmd.type = 0;
+			this.addJobAt(cmd,0);
+		}
+		
+		
 		/**
 		 * MAIL FROMコマンド
 		 */
@@ -396,6 +421,13 @@ package com.coltware.airxmail.smtp
 								}
 								else if(code == "250-"){
 									// 次の行への情報
+									if(cmd == "EHLO"){
+										var msg:String = line.substr(4);
+										msg = StringUtil.trim(msg);
+										if(msg == "STARTTLS"){
+											this.starttls();
+										}
+									}
 								}
 								else{
 									if(cmd == "QUIT" && code == "221"){
@@ -417,6 +449,17 @@ package com.coltware.airxmail.smtp
 										else{
 											this.commitJob();
 										}
+									}
+									else if(cmd == "STARTTLS" && code == "220"){
+										log.debug("starttls...");
+										var tlsEvent:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_START_TLS,false,false);
+										tlsEvent.$sock = this._sock;
+										this.dispatchEvent(tlsEvent);
+										
+										this.authPlain(true);
+										
+										this.commitJob();
+										
 									}
 								}
 							}
