@@ -18,6 +18,7 @@ package com.coltware.airxmail.MailSender
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.utils.ByteArray;
 	import flash.utils.IDataOutput;
 	import flash.utils.getDefinitionByName;
 	
@@ -96,6 +97,8 @@ package com.coltware.airxmail.MailSender
 		public static const SOCKET_OBJECT:String = "socket";
 		public static const MYHOSTNAME:String = "myhostname";
 		public static const IDLE_TIMEOUT:String = "idleTimeout";
+		
+		public static const CONNECTION_TIMEOUT:String = "connectionTimeout";
 		
 		
 		private var client:SMTPClient;
@@ -204,6 +207,11 @@ package com.coltware.airxmail.MailSender
 						client.setIdleTimeout(vnum);
 					}
 					break;
+				case CONNECTION_TIMEOUT:
+					vnum = value as Number;
+					if(vnum){
+						client.connectionTimeout = vnum;
+					}
 			}
 		}
 		/**
@@ -241,26 +249,39 @@ package com.coltware.airxmail.MailSender
 			for(i=0; i<len; i++){
 				client.rcptTo(rcpts[i].address);
 			}
+			//client.data(this.writeDataStr());
 			client.dataAsync();
 		}
 		
 		public function close():void{
-			if(client.isConnected){
-				client.quit();
-			}
+			log.info("close()..");
+			client.quit();
 		}
 		
 		/**
 		 *   write data
 		 */
 		private function writeData(e:SMTPEvent):void{
+			log.debug("writeData start");
 			var sock:Object = e.$sock;
 			this.currentMessage.writeHeaderSource(IDataOutput(sock));
 			sock.writeUTFBytes("\r\n");
 			sock.flush();
 			this.currentMessage.writeBodySource(IDataOutput(sock));
 			sock.writeUTFBytes("\r\n.\r\n");
+			log.debug("writeData flush start");
 			sock.flush();
+			log.debug("writeData flush end");
+			log.debug("writeData end");
+		}
+		
+		private function writeDataStr():String{
+			var bytes:ByteArray = new ByteArray();
+			this.currentMessage.writeHeaderSource(bytes);
+			bytes.writeUTFBytes("\r\n");
+			this.currentMessage.writeBodySource(bytes);
+			bytes.position = 0;
+			return bytes.readUTFBytes(bytes.bytesAvailable);
 		}
 		
 		/**
