@@ -127,7 +127,7 @@ package com.coltware.airxmail.smtp
 		 */
 		private var CMD_TYPE_AUTH_SESS:int  = 200;
 		
-		private var _timeout_msec:int = 5000;
+		private var _timeout_msec:int = 10000;
 		private var _timeout_uint:int = 0;
 		
 		public function SMTPClient()
@@ -136,6 +136,14 @@ package com.coltware.airxmail.smtp
 			_lineReader = new StringLineReader();
 			this.port = 25;
 			this._idleTimeout = 30000;
+		}
+		
+		/**
+		 * SMTPの接続までのタイムアウト値を設定する
+		 * 
+		 */
+		public function set connectionTimeout(val:int):void{
+			this._timeout_msec = val;
 		}
 		
 		override public function connect():void{
@@ -153,6 +161,7 @@ package com.coltware.airxmail.smtp
 			_timeout_uint = 0;
 			if(!isServiceReady){
 				if(this.isConnected){
+					log.debug("connection timeout [" + _timeout_msec + "]");
 					this.disconnect();
 				}
 				var evt:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_CONNECTION_FAILED);
@@ -364,9 +373,10 @@ package com.coltware.airxmail.smtp
 				}
 			}
 			else{
-				log.debug("WRITE:" + job.value);
+				log.debug("WRITE:" + job.key + " VALUE START");
 				this._sock.writeUTFBytes(job.value + "\r\n");
 				this._sock.flush();
+				log.debug("WRITE:" + job.key + " VALUE END");
 			}
 		}
 		
@@ -430,10 +440,15 @@ package com.coltware.airxmail.smtp
 									}
 								}
 								else{
-									if(cmd == "QUIT" && code == "221"){
-										log.info("QUIT Completed ..");
-										quit = true;
-										this.commitJob();
+									if(cmd == "QUIT"){
+										if(code == "221"){
+											log.info("QUIT Completed ..");
+											this.commitJob();
+										}
+										else{
+											quit = true;
+											this.commitJob();
+										}
 									}
 									else if(cmd == "EHLO" && code == "502"){
 										var evt:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_NOT_SUPPORT_ESMTP);
