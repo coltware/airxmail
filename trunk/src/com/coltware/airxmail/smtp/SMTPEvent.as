@@ -52,6 +52,10 @@ package com.coltware.airxmail.smtp
 		
 		public static var SMTP_START_TLS:String = "smtpStartTls";
 		
+		/**
+		 * コマンドの結果エラーが帰ってきたとき
+		 */
+		public static var SMTP_COMMAND_ERROR:String = "smtpCommandError";
 		
 		
 		airxmail_internal var $sock:Object;
