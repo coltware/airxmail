@@ -8,6 +8,8 @@ package com.coltware.airxmail
 
 	public class MailEvent extends Event
 	{
+		public static var MAIL_WRITE_FLUSH:String = "mailWriteFlush";
+		
 		airxmail_internal var $message:String = "";
 		
 		public function MailEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)

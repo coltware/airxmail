@@ -148,6 +148,13 @@ package com.coltware.airxmail.smtp
 		
 		override public function connect():void{
 			super.connect();
+			
+			
+		}
+		
+		override protected function connectHandler(ce:Event):void{
+			super.connectHandler(ce);
+			log.debug("set timeout [" + _timeout_msec + "]");
 			_timeout_uint = setTimeout(check_connect_timeout,_timeout_msec);
 		}
 		
@@ -362,12 +369,10 @@ package com.coltware.airxmail.smtp
 			}
 			else if(job.type == CMD_TYPE_AUTH_SESS){
 				if(job.onlyValue){
-					log.debug("WRITE V:" + job.value);
 					this._sock.writeUTFBytes(job.value + "\r\n");
 					this._sock.flush();
 				}
 				else{
-					log.debug("WRITE KV:" + job.key + " " + job.value + ":" + job.onlyValue); 
 					this._sock.writeUTFBytes(job.key + " " + job.value + "\r\n");
 					this._sock.flush();
 				}
@@ -597,6 +602,16 @@ package com.coltware.airxmail.smtp
 			//  サービスの準備ができないまま、サーバからの切断なので
 			var event:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_CONNECTION_FAILED);
 			this.dispatchEvent(event);
+		}
+		
+		airxmail_internal function flush():void{
+			log.debug("flush() ...");
+			_sock.flush();
+		}
+		
+		airxmail_internal function writeDate(data:String):void{
+			_sock.writeUTFBytes(data);
+			_sock.flush();
 		}
 		
 		
