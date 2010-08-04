@@ -294,33 +294,23 @@ package com.coltware.airxmail
 			
 			var enc:IEncoder = AirxMailConfig.getEncoder(encoding);
 			
+			if(enc is EventDispatcher){
+				var dispacher:EventDispatcher = enc as EventDispatcher;
+				dispacher.addEventListener(MailEvent.MAIL_WRITE_FLUSH,fireFlushEvent);
+			}
+			
 			if(enc){
 				enc.encodeBytes($bodySource,output);
 			}
 			else{
 				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
 			}
-			
-			/*
-			if($transferEncoding.toLowerCase() == "base64"){
-				var enc:Base64Encoder = new Base64Encoder();
-				enc.encodeBytes($bodySource,0,$bodySource.bytesAvailable);
-				var dataStr:String = enc.toString();
-				var fromChar:String = String.fromCharCode(Base64Encoder.newLine);
-				var lines:Array = dataStr.split(fromChar);
-				
-				var len:int = lines.length;
-				for(var i:int=0; i<len; i++){
-					output.writeUTFBytes(lines[i]);
-					if(i < len -1 ){ 
-						output.writeUTFBytes("\r\n");
-					}
-				}
-			}
-			else{
-				output.writeBytes($bodySource,0,$bodySource.bytesAvailable);
-			}
-			*/
+			this.fireFlushEvent(null);
+		}
+		
+		protected function fireFlushEvent(evt:MailEvent):void{
+			var event:MailEvent = new MailEvent(MailEvent.MAIL_WRITE_FLUSH,true,false);
+			this.dispatchEvent(event);
 		}
 	}
 }

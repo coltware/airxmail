@@ -9,21 +9,28 @@
 package com.coltware.airxmail.MailSender
 {	
 	import com.coltware.airxmail.IMailSender;
+	import com.coltware.airxmail.MailEvent;
 	import com.coltware.airxmail.MimeMessage;
 	import com.coltware.airxmail.smtp.SMTPClient;
 	import com.coltware.airxmail.smtp.SMTPEvent;
 	import com.coltware.airxmail_internal;
 	import com.coltware.commons.job.JobEvent;
 	
+	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.TimerEvent;
 	import flash.utils.ByteArray;
 	import flash.utils.IDataOutput;
+	import flash.utils.Timer;
 	import flash.utils.getDefinitionByName;
+	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
+	
+	import org.osmf.events.TimeEvent;
 	
 	use namespace airxmail_internal;
 	
@@ -100,6 +107,9 @@ package com.coltware.airxmail.MailSender
 		
 		public static const CONNECTION_TIMEOUT:String = "connectionTimeout";
 		
+		public static const BUFFER_SIZE:String = "bufferSize";
+		public static const ENABLE_BUFFER:String = "enableBuffer";
+		
 		
 		private var client:SMTPClient;
 		private var currentMessage:MimeMessage;
@@ -110,6 +120,16 @@ package com.coltware.airxmail.MailSender
 		private var _userName:String = null;
 		private var _userPswd:String = null;
 		private var _timout:int = 5000;
+		
+		private var _internalFlush:Boolean = false;
+		
+		/**
+		 * 出力時にバッファーを使うか
+		 */
+		private var _useBuffer:Boolean = true;
+		private var _bufferOutput:ByteArray;
+		private var _timer:Timer;
+		private var _bufferSize:uint = 1024 * 10;
 		
 		/**
 		 * HELOするときのホスト名
@@ -138,11 +158,11 @@ package com.coltware.airxmail.MailSender
 		 * </pre>
 		 */
 		public function setParameter(key:String,value:Object):void{
-			key = key.toLowerCase();
+			
 			var vstr:String;
 			var vbool:Boolean;
 			var vnum:Number;
-			log.debug("set param " + key + " => " + value);
+			
 			switch(key){
 				case HOST:
 					client.host = String(value); 
@@ -212,6 +232,26 @@ package com.coltware.airxmail.MailSender
 					if(vnum){
 						client.connectionTimeout = vnum;
 					}
+					else{
+						log.debug("vnum is not number : " + vnum);
+					}
+					break;
+				case BUFFER_SIZE:
+					vnum = value as Number;
+					if(vnum){
+						this._bufferSize = vnum;
+					}
+					break;
+				case ENABLE_BUFFER:
+					vstr = value as String;
+					vbool = value as Boolean;
+					if(vbool || ( vstr && vstr.toLowerCase() == "true")){
+						this._useBuffer = true;
+					}
+					else{
+						this._useBuffer = false;
+					}
+					break;
 			}
 		}
 		/**
@@ -253,6 +293,7 @@ package com.coltware.airxmail.MailSender
 			client.dataAsync();
 		}
 		
+		
 		public function close():void{
 			log.info("close()..");
 			client.quit();
@@ -262,17 +303,44 @@ package com.coltware.airxmail.MailSender
 		 *   write data
 		 */
 		private function writeData(e:SMTPEvent):void{
+			_internalFlush = true;
+			var start:Date = new Date();
 			log.debug("writeData start");
+			
+			
 			var sock:Object = e.$sock;
 			this.currentMessage.writeHeaderSource(IDataOutput(sock));
 			sock.writeUTFBytes("\r\n");
 			sock.flush();
-			this.currentMessage.writeBodySource(IDataOutput(sock));
-			sock.writeUTFBytes("\r\n.\r\n");
-			log.debug("writeData flush start");
-			sock.flush();
-			log.debug("writeData flush end");
-			log.debug("writeData end");
+			
+			log.debug("writeData body start");
+			if(this._useBuffer){
+				log.debug("enable buffer size:" + this._bufferSize);
+				_bufferOutput = new ByteArray();
+				this.currentMessage.writeBodySource(IDataOutput(_bufferOutput));
+				log.debug("write buffer loop");
+				internalWriteLoop();
+			}
+			else{
+				log.debug("not use buffer");
+				this.currentMessage.addEventListener(MailEvent.MAIL_WRITE_FLUSH,internalClientFlush);
+				this.currentMessage.writeBodySource(IDataOutput(sock));
+				sock.writeUTFBytes("\r\n.\r\n");
+				this.currentMessage.removeEventListener(MailEvent.MAIL_WRITE_FLUSH,internalClientFlush);
+				
+				
+				log.debug("flush() start");
+				sock.flush();
+				log.debug("flush() end");
+			}
+			
+			var end:Date = new Date();
+			var cost:Number = end.time - start.time;
+			
+			_internalFlush = false;
+			
+			log.debug("writeData end : " + cost + "msec");
+			
 		}
 		
 		private function writeDataStr():String{
@@ -282,6 +350,37 @@ package com.coltware.airxmail.MailSender
 			this.currentMessage.writeBodySource(bytes);
 			bytes.position = 0;
 			return bytes.readUTFBytes(bytes.bytesAvailable);
+		}
+		
+		private function internalWriteLoop():void{
+			log.debug("client flush...");
+			this._bufferOutput.position = 0;
+			_timer = new Timer(20,0);
+			_timer.addEventListener(TimerEvent.TIMER,internalWrite);
+			_timer.start();
+		}
+		
+		private function internalClientFlush(evt:MailEvent):void{
+			client.flush();
+		}
+		
+		private function internalWrite(evt:TimerEvent):void{
+			var data:String;
+			var unit:uint = this._bufferSize;
+			var start:Date = new Date();
+			if(_bufferOutput.bytesAvailable > unit){
+				data = _bufferOutput.readUTFBytes(unit);
+				client.writeDate(data);
+			}
+			else{
+				data = _bufferOutput.readUTFBytes(this._bufferOutput.bytesAvailable);
+				_timer.stop();
+				client.writeDate(data);
+				client.writeDate("\r\n.\r\n");
+			}
+			var end:Date = new Date();
+			var cost:Number = end.time - start.time;
+			log.debug("cost is " + cost);
 		}
 		
 		/**

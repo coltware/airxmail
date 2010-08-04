@@ -52,10 +52,13 @@ package com.coltware.airxmail.MailSender
 			log.info("write file..." + writefile.nativePath);
 			var fs:FileStream = new FileStream();
 			fs.open(writefile,FileMode.WRITE);
+			log.info("file opened");
 			message.writeHeaderSource(fs);
 			fs.writeUTFBytes("\r\n");
 			message.writeBodySource(fs);
 			fs.close();
+			
+			log.info("message sent");
 		}
 		
 		public function setParameter(key:String, value:Object):void

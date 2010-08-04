@@ -61,6 +61,7 @@ package com.coltware.airxmail
 		 * 
 		 */
 		public function addChildPart(part:MimeBodyPart):void{
+			part.addEventListener(MailEvent.MAIL_WRITE_FLUSH,fireFlushEvent);
 			this._partChildren.push(part);
 		}
 		
