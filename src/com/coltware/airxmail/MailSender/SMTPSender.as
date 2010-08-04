@@ -75,6 +75,10 @@ package com.coltware.airxmail.MailSender
 	 *  @eventType com.coltware.airxmail.smtp.SMTPEvent.SMTP_START_TLS
 	 */
 	[Event(name="smtpStartTls",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	/**
+	 *  @eventType com.coltware.airxmail.smtp.SMTPEvent.SMTP_COMMAND_ERROR
+	 */
+	[Event(name="smtpCommandError",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
 	/**
 	 *  MimeMessageオブジェクトからSMTPでメールを送信するためのクラス

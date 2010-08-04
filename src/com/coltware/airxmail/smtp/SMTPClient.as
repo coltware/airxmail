@@ -98,6 +98,11 @@ package com.coltware.airxmail.smtp
 	[Event(name="smtpStartTls",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
 	/**
+	 *  SMTP コマンドエラー
+	 */
+	[Event(name="smtpCommandError",type="com.coltware.airxmail.smtp.SMTPEvent")]
+	
+	/**
 	 *  SMTP Client Class
 	 * 
 	 * 
@@ -481,6 +486,15 @@ package com.coltware.airxmail.smtp
 										this.commitJob();
 										
 									}
+									else{
+										line = StringUtil.trim(line);
+										var codeVal:Number = parseInt(line.substr(0,3));
+										if(codeVal > 300){
+											var cmdErrEvt:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_COMMAND_ERROR);
+											cmdErrEvt.$message = line;
+											this.dispatchEvent(cmdErrEvt);
+										}
+									}
 								}
 							}
 							if(quit){
@@ -532,6 +546,7 @@ package com.coltware.airxmail.smtp
 							}
 							else if(code == "235"){
 								this.commitJob();
+								log.debug("SMTP AUTH OK");
 								var ok:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_AUTH_OK);
 								ok.$message = line;
 								this.dispatchEvent(ok);
@@ -559,6 +574,9 @@ package com.coltware.airxmail.smtp
 									sentOk.$message = line;
 									this.dispatchEvent(sentOk);
 								}
+							}
+							else{
+								log.debug("unknown error..." + StringUtil.trim(line));
 							}
 						}
 					}
