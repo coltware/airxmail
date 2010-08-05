@@ -118,6 +118,8 @@ package com.coltware.airxmail.smtp
 		 */
 		private var _supportESMTP:Boolean = false;
 		
+		//  すでに認証済みか？
+		private var _auth_done:Boolean = false;
 		private var _auth:Boolean = false;
 		private var _authType:String = "";
 		//  認証が可能か（ユーザ名とパスワードが設定されているか？)
@@ -134,6 +136,7 @@ package com.coltware.airxmail.smtp
 		
 		private var _timeout_msec:int = 10000;
 		private var _timeout_uint:int = 0;
+		
 		
 		public function SMTPClient()
 		{
@@ -422,7 +425,7 @@ package com.coltware.airxmail.smtp
 										this._supportESMTP = true;
 										
 										//  認証が必要で、認証用のIDとパスワードが設定されているとき
-										if(this._auth && this._enableAuth){
+										if(this._auth && this._enableAuth  && this._auth_done == false){
 											if(this._authType == "PLAIN"){
 												this.authPlain(true);
 											}
@@ -458,6 +461,7 @@ package com.coltware.airxmail.smtp
 										else{
 											quit = true;
 											this.commitJob();
+											this._auth_done = false;
 										}
 									}
 									else if(cmd == "EHLO" && code == "502"){
@@ -547,6 +551,7 @@ package com.coltware.airxmail.smtp
 							else if(code == "235"){
 								this.commitJob();
 								log.debug("SMTP AUTH OK");
+								this._auth_done = true;
 								var ok:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_AUTH_OK);
 								ok.$message = line;
 								this.dispatchEvent(ok);
