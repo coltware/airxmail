@@ -131,6 +131,8 @@ package com.coltware.airxmail.MailSender
 		private var _timer:Timer;
 		private var _bufferSize:uint = 16384;
 		
+		private var _keep_conn:Boolean = false;
+		
 		/**
 		 * HELOするときのホスト名
 		 */
@@ -265,13 +267,16 @@ package com.coltware.airxmail.MailSender
 			
 			this.currentMessage = message;
 			if(!client.isConnected){
-				log.debug("connect ... ");
-				client.connect();
-				client.ehlo(this._myhost);
+				if(this._keep_conn == false){
+					log.debug("connect ... ");
+					client.connect();
+					client.ehlo(this._myhost);
 				
-				if(_smtpAuth){
-					client.setAuth(_userName,_userPswd);
+					if(_smtpAuth){
+						client.setAuth(_userName,_userPswd);
+					}
 				}
+				this._keep_conn = true;
 			}
 			var i:int;
 			
@@ -296,6 +301,7 @@ package com.coltware.airxmail.MailSender
 		
 		public function close():void{
 			log.info("close()..");
+			this._keep_conn = false;
 			client.quit();
 		}
 		
