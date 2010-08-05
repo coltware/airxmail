@@ -129,7 +129,7 @@ package com.coltware.airxmail.MailSender
 		private var _useBuffer:Boolean = true;
 		private var _bufferOutput:ByteArray;
 		private var _timer:Timer;
-		private var _bufferSize:uint = 1024 * 10;
+		private var _bufferSize:uint = 16384;
 		
 		/**
 		 * HELOするときのホスト名
@@ -313,12 +313,10 @@ package com.coltware.airxmail.MailSender
 			sock.writeUTFBytes("\r\n");
 			sock.flush();
 			
-			log.debug("writeData body start");
 			if(this._useBuffer){
 				log.debug("enable buffer size:" + this._bufferSize);
 				_bufferOutput = new ByteArray();
 				this.currentMessage.writeBodySource(IDataOutput(_bufferOutput));
-				log.debug("write buffer loop");
 				internalWriteLoop();
 			}
 			else{
@@ -327,11 +325,7 @@ package com.coltware.airxmail.MailSender
 				this.currentMessage.writeBodySource(IDataOutput(sock));
 				sock.writeUTFBytes("\r\n.\r\n");
 				this.currentMessage.removeEventListener(MailEvent.MAIL_WRITE_FLUSH,internalClientFlush);
-				
-				
-				log.debug("flush() start");
 				sock.flush();
-				log.debug("flush() end");
 			}
 			
 			var end:Date = new Date();
@@ -353,10 +347,12 @@ package com.coltware.airxmail.MailSender
 		}
 		
 		private function internalWriteLoop():void{
-			log.debug("client flush...");
+			log.debug("client flush... loop start");
 			this._bufferOutput.position = 0;
-			_timer = new Timer(20,0);
-			_timer.addEventListener(TimerEvent.TIMER,internalWrite);
+			if(_timer == null){
+				_timer = new Timer(20,0);
+				_timer.addEventListener(TimerEvent.TIMER,internalWrite);
+			}
 			_timer.start();
 		}
 		
@@ -368,19 +364,23 @@ package com.coltware.airxmail.MailSender
 			var data:String;
 			var unit:uint = this._bufferSize;
 			var start:Date = new Date();
+			var writeSize:int = 0;
 			if(_bufferOutput.bytesAvailable > unit){
+				writeSize = unit;
 				data = _bufferOutput.readUTFBytes(unit);
 				client.writeDate(data);
 			}
 			else{
+				writeSize = this._bufferOutput.bytesAvailable;
 				data = _bufferOutput.readUTFBytes(this._bufferOutput.bytesAvailable);
 				_timer.stop();
 				client.writeDate(data);
 				client.writeDate("\r\n.\r\n");
+				log.debug("write last data. waitting... 250 status ");
 			}
 			var end:Date = new Date();
 			var cost:Number = end.time - start.time;
-			log.debug("cost is " + cost);
+			log.debug("write data size: [" + writeSize + "] / cost [" + cost + "]msec");
 		}
 		
 		/**
@@ -400,6 +400,5 @@ package com.coltware.airxmail.MailSender
 				client.quit();
 			}
 		}
-
 	}
 }
