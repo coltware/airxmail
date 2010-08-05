@@ -128,7 +128,33 @@ package com.coltware.airxmail
 			if(_charset == null){
 				_charset = _defaultCharset;
 			}
-			subHeader.value = MimeUtils.encodeMimeHeader(sub,_charset);
+			if(_charset){
+				var pos:int = 0;
+				var _sub:String;
+				subHeader.value = "";
+				var unit:int = 20;
+				for(var i:int = 0; i < sub.length; i++){
+					if(i > 0 && i % unit == 0){
+						_sub = sub.substr(pos,unit);
+						if(subHeader.value.length > 0 ){
+							subHeader.value += "\r\n\t";
+							subHeader.value += MimeUtils.encodeMimeHeader(_sub,_charset,false);
+						}
+						else{
+							subHeader.value += MimeUtils.encodeMimeHeader(_sub,_charset,false);
+						}
+						pos = pos + unit;
+					}
+				}
+				if(i % unit != 0){
+					log.debug(_sub);
+					subHeader.value += "\r\n\t";
+					subHeader.value += MimeUtils.encodeMimeHeader(_sub,_charset,false);
+				}
+			}
+			else{
+				subHeader.value = MimeUtils.encodeMimeHeader(sub,_charset,false);
+			}
 			this.addHeader(subHeader);
 		}
 		
