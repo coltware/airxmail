@@ -132,6 +132,7 @@ package com.coltware.airxmail
 			this.addHeader(subHeader);
 		}
 		
+		
 		public function get fromInetAddress():INetAddress{
 			return $fromAddress;
 		}
@@ -145,6 +146,11 @@ package com.coltware.airxmail
 		
 		public function setFrom(addr:INetAddress):void{
 			$fromAddress = addr;
+		}
+		
+		public function setReplyTo(addr:INetAddress):void{
+			var val:String = addr.toMimeString(this._defaultCharset);
+			this.addHeaderKeyValue("Reply-to",val);
 		}
 		/*
 		public function get to():String{
