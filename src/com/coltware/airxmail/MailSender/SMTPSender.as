@@ -16,7 +16,6 @@ package com.coltware.airxmail.MailSender
 	import com.coltware.airxmail_internal;
 	import com.coltware.commons.job.JobEvent;
 	
-	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
@@ -25,12 +24,9 @@ package com.coltware.airxmail.MailSender
 	import flash.utils.IDataOutput;
 	import flash.utils.Timer;
 	import flash.utils.getDefinitionByName;
-	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
-	
-	import org.osmf.events.TimeEvent;
 	
 	use namespace airxmail_internal;
 	
