@@ -147,8 +147,10 @@ package com.coltware.airxmail
 					}
 				}
 				if(i % unit != 0){
-					log.debug(_sub);
-					subHeader.value += "\r\n\t";
+					_sub = sub.substr(pos);
+					if(subHeader.value.length > 0 ){
+						subHeader.value += "\r\n\t";
+					}
 					subHeader.value += MimeUtils.encodeMimeHeader(_sub,_charset,false);
 				}
 			}
