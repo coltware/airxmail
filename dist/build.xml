@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="airxmail" basedir="..">
+<project name="airxmail_air15" basedir="..">
 	<!-- FLEX SDKの設定 -->
 	<!--  ******* 以下　環境に合わせて書き直すこと ************* -->
 	
-	<property name="REVISION" value="23" />
-	<property name="FLEX_SDK" value="C:\Flex\sdk\3.4" />
+	<property name="REVISION" value="66" />
+	<property name="FLEX_SDK" value="C:\Flex\sdk\3.5.0.12683" />
 	<property name="FLEX_HOME" value="${FLEX_SDK}" />
 	<property name="PRJ_ROOT" value="${basedir}/../" />
 	
@@ -36,8 +36,8 @@
 		</exec>
 	</target>
 	
-	<target name="compc">
-		<compc output="dist/coltware_airxmail_r${REVISION}.swc">
+	<target name="compc_15">
+		<compc output="dist/coltware_airxmail_air15_r${REVISION}.swc">
 			<load-config filename="${FLEX_SDK}/frameworks/air-config.xml" />
 			<source-path path-element="${basedir}/src" />
 			<include-sources dir="${basedir}/src" includes="*" />
