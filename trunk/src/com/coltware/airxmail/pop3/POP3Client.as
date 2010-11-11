@@ -125,6 +125,10 @@ package com.coltware.airxmail.pop3
 			this._password = pswd;
 		}
 		
+		public function set connectionTimeout(val:int):void{
+			this._timeout_msec = val;
+		}
+		
 		public function connectAuth(user:String,pswd:String):void{
 			this.clearJobs();
 			super.connect();
@@ -137,7 +141,7 @@ package com.coltware.airxmail.pop3
 			job2.key = DO_PASS;
 			job2.value = pswd;
 			this.addJob(job2);
-			_timeout_uint = setTimeout(check_connect_timeout,5000);
+			_timeout_uint = setTimeout(check_connect_timeout,_timeout_msec);
 		}
 		
 		override public function connect():void{
@@ -209,6 +213,8 @@ package com.coltware.airxmail.pop3
 			job.key = DO_RETR;
 			job.value = String(i);
 			job.uid = uid;
+			
+			log.debug("addJob > " + job.key + " " + job.value);
 			this.addJob(job);
 		}
 		public function dele(i:int):void{
@@ -264,8 +270,8 @@ package com.coltware.airxmail.pop3
 			}
 			else{
 				cmd = job.key;
-			}
-			log.debug("CMD>" + cmd);  
+			}	
+			
 			if(this._sock.connected){
 				this._sock.writeUTFBytes(cmd +"\r\n");
 				this._sock.flush();
@@ -281,6 +287,10 @@ package com.coltware.airxmail.pop3
 			var errEvt:POP3Event;
 			_lineReader.source = IDataInput(_sock);
 			var line:String = null;
+			
+			var buf:ByteArray;
+			var reader:StringLineReader; 
+			
 			if(this.isServiceReady){
 				
 				var job:Object = this.currentJob;
@@ -352,7 +362,32 @@ package com.coltware.airxmail.pop3
 						log.debug(cmd + ">" + line);
 						line = StringUtil.trim(line);
 						if(job.result){
+							buf = job.source as ByteArray;
+							
 							if(line == "."){
+								
+								reader = new StringLineReader();
+								buf.position = 0;
+								reader.source = buf;
+								var line2:String;
+								while(line2 = reader.next()){
+									var p:Array = line2.split(/[[:space:]]+/);
+									if(cmd == DO_UIDL){
+										var obj:POP3UID = new POP3UID();
+										obj.number = int(p[0]);
+										obj.value  = p[1];
+										job.data.push(obj);
+										this._uidMap[obj.value] = obj.number;
+									}
+									else{
+										var size:Object = new Object();
+										size.number = int(p[0]);
+										size.value  = int(p[1]);
+										job.data.push(size);
+										this._sizeMap[size.number] = size.value;
+									}
+								}
+								
 								var listEvent:POP3Event;
 								if(cmd == DO_LIST){
 									listEvent = new POP3ListEvent(POP3ListEvent.POP3_RESULT_LIST);	
@@ -366,27 +401,15 @@ package com.coltware.airxmail.pop3
 								this.commitJob();
 							}
 							else{
-								var p:Array = line.split(/[[:space:]]+/);
-								if(cmd == DO_UIDL){
-									var obj:POP3UID = new POP3UID();
-									obj.number = int(p[0]);
-									obj.value  = p[1];
-									job.data.push(obj);
-									this._uidMap[obj.value] = obj.number;
-								}
-								else{
-									var size:Object = new Object();
-									size.number = int(p[0]);
-									size.value  = int(p[1]);
-									job.data.push(size);
-									this._sizeMap[size.number] = size.value;
-								}
+								var buf2:ByteArray = job.source as ByteArray;
+								buf2.writeBytes(_lineReader.lastBytearray());
 							}
 						}
 						else{
 							if(line.substr(0,3) == "+OK"){
 								job.result = true;
 								job.data = new Array();
+								job.source = new ByteArray();
 							}
 							else if(line.substr(0,4) == "+ERR"){
 								//  ERROR
@@ -419,11 +442,11 @@ package com.coltware.airxmail.pop3
 							}
 						}
 						else{
-							var buf:ByteArray = job.source as ByteArray;
+							buf = job.source as ByteArray;
 							l = StringUtil.trim(line);
 							if(l == "."){
 								//  BODYの終了
-								var reader:StringLineReader = new StringLineReader();
+								reader = new StringLineReader();
 								buf.position = 0;
 								reader.source = buf;
 								var bodyLine:String;
