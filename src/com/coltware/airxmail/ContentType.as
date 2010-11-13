@@ -61,13 +61,25 @@ package com.coltware.airxmail
 			return this._mainType;
 		}
 		/**
+		 *  (Spell Miss. Please use getSubType() )
 		 *  return sub type
 		 * 
 		 *  ex) if content-type is "text/plain" , return value is "plain"
+		 * 
+		 *  @see getSubType()
 		 */
 		public function getSubStype():String{
 			return this._subType;
 		}
+		/**
+		 *  return sub type
+		 * 
+		 *  ex) if content-type is "text/plain" , return value is "plain"
+		 */
+		public function getSubType():String{
+			return this._subType;
+		}
+		
 		/**
 		 *  set main type
 		 */

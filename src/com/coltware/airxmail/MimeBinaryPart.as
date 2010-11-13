@@ -42,6 +42,10 @@ package com.coltware.airxmail
 			return this._contentDisposition;
 		}
 		
+		public function set contentDisposition(header:MimeHeader):void{
+			this._contentDisposition = header;
+		}
+		
 		public function setAttachementFile(file:File,filename:String = null):void{
 			var fs:FileStream = new FileStream();
 			fs.open(file,FileMode.READ);

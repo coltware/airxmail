@@ -304,13 +304,20 @@ package com.coltware.airxmail
 			
 			// attachment files process
 			var contentDisposition:MimeHeader = _curMimeMessage.getHeader("Content-Disposition");
-			if(contentDisposition && contentDisposition.value == "attachment"){
-				if(_rootMessage){
-					_rootMessage.$attachements.push(_curMimeMessage);
+			
+			if(contentDisposition){
+				if(_curMimeMessage is MimeBinaryPart){
+					MimeBinaryPart(_curMimeMessage).contentDisposition = contentDisposition;
 				}
-				else{
-					// maybe bug ?
-					log.warn("Root message container (MimeMessage) is NULL !?"); 
+				
+				if(contentDisposition.value == "attachment"){
+					if(_rootMessage){
+						_rootMessage.$attachements.push(_curMimeMessage);
+					}
+					else{
+						// maybe bug ?
+						log.warn("Root message container (MimeMessage) is NULL !?"); 
+					}
 				}
 			}
 		}
