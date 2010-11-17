@@ -6,29 +6,29 @@
  *
  * @author coltware@gmail.com
  */
-package com.coltware.airxmail.pop3
+package com.coltware.airxmail.imap
 {
 	import com.coltware.airxmail.IMessageEvent;
 	import com.coltware.airxmail.MimeMessage;
 	
 	import flash.utils.ByteArray;
 	
-	public class POP3MessageEvent extends POP3Event implements IMessageEvent
+	public class IMAP4MessageEvent extends IMAP4Event implements IMessageEvent
 	{
-		public static const POP3_MESSAGE:String = "pop3Message";
+		public static const IMAP4_MESSAGE:String = "imap4Message";
 		
 		public var octets:int = 0;
 		public var source:ByteArray;
 		
-		public function POP3MessageEvent(type:String)
+		public function IMAP4MessageEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
-			super(type);
+			super(type, bubbles, cancelable);
 		}
 		
-		public function getMimeMessage():MimeMessage{
+		public function getMimeMessage():MimeMessage
+		{
 			var msg:MimeMessage = _result as MimeMessage;
 			return msg;
 		}
-		
 	}
 }
