@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" version="1">
+  <includeClasses>
+    <classEntry path="com.coltware.airxmail.AirxMailConfig"/>
+    <classEntry path="com.coltware.airxmail.MimeHeader"/>
+    <classEntry path="com.coltware.airxmail.MailParser"/>
+    <classEntry path="com.coltware.airxmail.MimeMessage"/>
+    <classEntry path="com.coltware.airxmail.smtp.SMTPClient"/>
+    <classEntry path="com.coltware.airxmail.IMailFolder"/>
+    <classEntry path="com.coltware.airxmail.pop3.POP3MessageEvent"/>
+    <classEntry path="com.coltware.airxmail.pop3.POP3Event"/>
+    <classEntry path="com.coltware.airxmail.ContentType"/>
+    <classEntry path="com.coltware.airxmail.MimeImagePart"/>
+    <classEntry path="com.coltware.airxmail.MimeTypes"/>
+    <classEntry path="com.coltware.airxmail.MailFolder.POP3Folder"/>
+    <classEntry path="com.coltware.airxmail.MimeUtils"/>
+    <classEntry path="com.coltware.airxmail.pop3.POP3ListEvent"/>
+    <classEntry path="com.coltware.airxmail.MimeMultiPart"/>
+    <classEntry path="com.coltware.airxmail_internal"/>
+    <classEntry path="com.coltware.airxmail.MimeTextPart"/>
+    <classEntry path="com.coltware.airxmail.MimeBinaryPart"/>
+    <classEntry path="com.coltware.airxmail.INetAddress"/>
+    <classEntry path="com.coltware.airxmail.pop3.POP3UID"/>
+    <classEntry path="com.coltware.airxmail.RecipientType"/>
+    <classEntry path="com.coltware.airxmail.pop3.POP3Client"/>
+    <classEntry path="com.coltware.airxmail.MailSender.SMTPSender"/>
+    <classEntry path="com.coltware.airxmail.IMailSender"/>
+    <classEntry path="com.coltware.airxmail.MailSender.DirSender"/>
+    <classEntry path="com.coltware.airxmail.smtp.SMTPEvent"/>
+    <classEntry path="com.coltware.airxmail.MailEvent"/>
+    <classEntry path="com.coltware.airxmail.MimeBodyPart"/>
+    <classEntry path="com.coltware.airxmail.encode.IEncoder"/>
+    <classEntry path="com.coltware.airxmail.encode.Base64"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>
