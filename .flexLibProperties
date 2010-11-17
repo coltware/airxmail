@@ -31,6 +31,27 @@
     <classEntry path="com.coltware.airxmail.MimeBodyPart"/>
     <classEntry path="com.coltware.airxmail.encode.IEncoder"/>
     <classEntry path="com.coltware.airxmail.encode.Base64"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4Client"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4Event"/>
+    <classEntry path="com.coltware.airxmail.imap.command.IMAP4Command"/>
+    <classEntry path="com.coltware.airxmail.imap.command.CapabilityCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.NamespaceCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.LoginCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.ListCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.LogoutCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.SelectCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4Folder"/>
+    <classEntry path="com.coltware.airxmail.imap.command.LsubCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.NoopCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.CreateCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.DeleteCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.RenameCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.SearchCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4ListEvent"/>
+    <classEntry path="com.coltware.airxmail.imap.command.MessageCommand"/>
+    <classEntry path="com.coltware.airxmail.IMessageEvent"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4MessageEvent"/>
+    <classEntry path="com.coltware.airxmail.imap.utils.IMAPUTF7Decoder"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
