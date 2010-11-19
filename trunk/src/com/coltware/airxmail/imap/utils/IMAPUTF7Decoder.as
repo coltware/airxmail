@@ -34,7 +34,7 @@ package com.coltware.airxmail.imap.utils
 				}
 				else{
 					if(plain){
-						bytes.writeUTFBytes(ch);
+						bytes.writeMultiByte(ch,"unicodeFFFE");
 					}
 					else{
 						var pos:int = keymap.indexOf(ch);

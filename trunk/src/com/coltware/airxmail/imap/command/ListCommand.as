@@ -8,21 +8,28 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
+	import com.coltware.airxmail_internal;
+	import com.coltware.commons.job.IBlockable;
 	import com.coltware.commons.utils.StringLineReader;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	import mx.utils.StringUtil;
+	
+	use namespace airxmail_internal;
 
-	public class ListCommand extends IMAP4Command
+	public class ListCommand extends IMAP4Command implements IBlockable
 	{
 		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.command.ListCommand");
 		
 		private var _basename:String;
 		private var _mailbox:String;
 		
-		private var _folder:IMAP4Folder;
+		private var _folders:Array;
+		
+		private var _isBlock:Boolean = false;
 		
 		public static const NOINFERORS:String 	= "\Noinferiors";
 		public static const NOSELECT:String 		= "\Noselect";
@@ -37,13 +44,26 @@ package com.coltware.airxmail.imap.command
 			this.key = "LIST";
 			this._basename = basename;
 			this._mailbox = mailbox;
+			_folders = new Array();
+		}
+		
+		public function isBlock():Boolean{
+			return _isBlock;
+		}
+		
+		public function block(val:Boolean):void{
+			this._isBlock = val;
 		}
 		
 		override public function createCommand(tag:String,capability:CapabilityCommand = null):String{
 			this.tag = tag;
 			var cmd:String = tag + " " + key + " \"" + this._basename + "\" \"" + this._mailbox + "\"";
 			return cmd;
-		} 
+		}
+		
+		public function getResultFolders():Array{
+			return this._folders;
+		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String;
@@ -57,21 +77,32 @@ package com.coltware.airxmail.imap.command
 			}
 		}
 		
+		
+		
 		private function _parse_list_line(line:String):void{
 			var pos1:int = line.indexOf("(");
 			var pos2:int = line.indexOf(")");
 			if(pos1 > -1 && pos2 > pos1 ){
-				var type:String = line.substr(pos1 + 1,pos2 - pos1 -1);
-				log.debug("list type=>" + type);
-				
+				var attrs_str:String = line.substr(pos1 + 1,pos2 - pos1 -1);
+				var attrs:Array = attrs_str.split(/\s+/);
+					
 				var rest:String = line.substr(pos2 + 1);
-				log.debug("list rest=>" + rest);
 				
 				var ret:Array = this._parse_quato_value(rest);
 				if(ret){
 					var ret2:Array = this._parse_quato_value(ret[1]);
-					log.debug("delim => [" + ret[0] + "]");
-					log.debug("box =>[" + ret2[0] + "]");
+					var folder:IMAP4Folder = new IMAP4Folder(ret2[0],ret[0],attrs);
+					
+					trace(attrs);
+					
+					var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
+					event.client = this.client;
+					event.$command = this;
+					event.result = folder;
+					
+					_folders.push(folder);
+					
+					client.dispatchEvent(event);
 				}
 			}
 		}

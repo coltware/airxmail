@@ -52,6 +52,10 @@
     <classEntry path="com.coltware.airxmail.IMessageEvent"/>
     <classEntry path="com.coltware.airxmail.imap.IMAP4MessageEvent"/>
     <classEntry path="com.coltware.airxmail.imap.utils.IMAPUTF7Decoder"/>
+    <classEntry path="com.coltware.airxmail.imap.utils.IMAPUTF7Encoder"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4Flag"/>
+    <classEntry path="com.coltware.airxmail.imap.chain.ISelect"/>
+    <classEntry path="com.coltware.airxmail.imap.chain.ISearch"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

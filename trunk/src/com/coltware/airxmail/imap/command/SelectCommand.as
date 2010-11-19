@@ -8,25 +8,60 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxmail.imap.IMAP4Event;
+	import com.coltware.airxmail.imap.IMAP4Folder;
+	import com.coltware.airxmail.imap.chain.ISearch;
+	import com.coltware.airxmail_internal;
+	import com.coltware.commons.job.IBlockable;
 	import com.coltware.commons.utils.StringLineReader;
+	
+	import flash.events.Event;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	import mx.utils.StringUtil;
+	
+	use namespace airxmail_internal;
 
-	public class SelectCommand extends IMAP4Command
+	public class SelectCommand extends IMAP4Command implements IBlockable, ISearch
 	{
 		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.command.SelectCommand");
 		
+		private var _folder:IMAP4Folder;
 		private var _exists:Number = 0;
 		private var _recent:Number = 0;
 		private var _uidvalidity:String;
 		
-		public function SelectCommand(value:String = "")
+		public function SelectCommand(folder_StringOrIMAP4Folder:Object = null)
 		{
 			super();
 			this.key = "SELECT";
-			this.value = value;
+			if(folder_StringOrIMAP4Folder is IMAP4Folder){
+				_folder = folder_StringOrIMAP4Folder as IMAP4Folder;
+				this.value = '"' +  (folder_StringOrIMAP4Folder as IMAP4Folder).name + '"';
+			}
+			else{
+				this.value = '"' + ( folder_StringOrIMAP4Folder as String) + '"';
+			}
+		}
+		
+		public function search(args:String,useUid:Boolean = true):void{
+			
+			var f:Function = function(evt:*):void{
+				log.debug("OK...");
+				removeEventListener(Event.COMPLETE,f);
+				client.search(args,useUid);
+			};
+			this.addEventListener(Event.COMPLETE,f,false,1,true);
+		}
+		
+		
+		public function isBlock():Boolean{
+			return true;
+		}
+		
+		public function get folder():IMAP4Folder{
+			return this._folder;
 		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
@@ -40,9 +75,18 @@ package com.coltware.airxmail.imap.command
 				this._parse_uidvalidity(line);
 			}
 			
+			if(_folder){
+				_folder.$numExists = this._exists;
+				_folder.$uidvalidity = this._uidvalidity;
+				_folder.$numRecent = this._recent;
+			}
+			var event:Event = new Event(Event.COMPLETE);
+			this.dispatchEvent(event);
+			/*
 			log.debug("exists :[" + this._exists + "]");
 			log.debug("recent:[" + this._recent + "]");
 			log.debug("uid:[" + this._uidvalidity + "]");
+			*/
 		}
 		
 		private function _parse_exists(line:String):Boolean{

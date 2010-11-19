@@ -9,6 +9,8 @@
 package com.coltware.airxmail.imap
 {
 	import com.coltware.airxmail.MailParser;
+	import com.coltware.airxmail.imap.chain.ISearch;
+	import com.coltware.airxmail.imap.chain.ISelect;
 	import com.coltware.airxmail.imap.command.CapabilityCommand;
 	import com.coltware.airxmail.imap.command.CreateCommand;
 	import com.coltware.airxmail.imap.command.DeleteCommand;
@@ -45,14 +47,23 @@ package com.coltware.airxmail.imap
 	[Event(name="imap4ResultUidList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	[Event(name="imap4ResultList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	
+	[Event(name="imap4CommandOk",type="com.coltware.airxmail.imap.IMAP4Event")]
+	[Event(name="imap4CommandNo",type="com.coltware.airxmail.imap.IMAP4Event")]
+	[Event(name="imap4CommandBad",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
+	[Event(name="imap4FolderResult",type="com.coltware.airxmail.imap.IMAP4Event")]
 	/**
 	 *  @eventType com.coltware.airxmail.imap.IMAP4MessageEvent.IMAP4_MESSAGE
 	 */
 	[Event(name="imap4Message",type="com.coltware.airxmail.imap.IMAP4MessageEvent")]
 	
+	
+	
 	public class IMAP4Client extends SocketJobSync
 	{
 		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.IMAP4Client");
+		
+		private var _tag_prefix:String = "AX";
 		
 		/**
 		 * Tag of command
@@ -116,8 +127,11 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
-		public function noop():void{
+		public function noop(tag:String = null):void{
 			var job:NoopCommand = new NoopCommand();
+			if(tag){
+				job.tag = tag;
+			}
 			this.addJob(job);
 		}
 		
@@ -126,14 +140,21 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		public function listBlocking(base:String = "",mailbox:String = "*"):void{
+			var job:ListCommand = new ListCommand(base,mailbox);
+			job.block(true);
+			this.addJob(job);
+		}
+		
 		public function lsub(base:String = "",mailbox:String = "*"):void{
 			var job:LsubCommand = new LsubCommand(base,mailbox);
 			this.addJob(job);
 		}
 		
-		public function select(mailbox:String):void{
-			var job:SelectCommand = new SelectCommand(mailbox);
+		public function select(folder:Object):ISearch{
+			var job:SelectCommand = new SelectCommand(folder);
 			this.addJob(job);
+			return job;
 		}
 		
 		public function search(args:String,useUid:Boolean = true):void{
@@ -161,12 +182,24 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		override protected function addJob(job:Object):void{
+			var imap4cmd:IMAP4Command = job as IMAP4Command;
+			imap4cmd.client = this;
+			super.addJob(imap4cmd);
+		}
+		
 		override protected function exec(job:Object):void{
 			
 			var imap4cmd:IMAP4Command = job as IMAP4Command;
-			imap4cmd.client = this;
 			
-			var cmd:String = imap4cmd.createCommand(String(this._tag_num),this._capabilityCmd);
+			var tagname:String;
+			if(imap4cmd.tag){
+				tagname = imap4cmd.tag;
+			}
+			else{
+				tagname = _tag_prefix + (String(this._tag_num));
+			}
+			var cmd:String = imap4cmd.createCommand(tagname,this._capabilityCmd);
 			
 			if(this._sock.connected){
 				this._tag_num++;
@@ -208,7 +241,8 @@ package com.coltware.airxmail.imap
 								job.status = status;
 								if(status == "OK"){
 									job.$result_parse();
-								
+									
+									
 									if(job is CapabilityCommand){
 										this._capabilityCmd = job as CapabilityCommand;
 									}
@@ -218,16 +252,24 @@ package com.coltware.airxmail.imap
 											this.addJobAt(njob,0);
 										}
 									}
+									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
+									eventOk.$command = job;
+									eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
+									
+									this.dispatchEvent(eventOk);
+									
 									this.commitJob();
 								}
 								else if(status == "NO"){
 									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
 									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
+									
 									this.dispatchEvent(eventNo);
 								}
 								else if(status == "BAD"){
 									var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
 									eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
+									
 									this.dispatchEvent(eventBad);
 								}
 								

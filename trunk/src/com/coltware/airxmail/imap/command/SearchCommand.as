@@ -9,11 +9,12 @@
 package com.coltware.airxmail.imap.command
 {
 	import com.coltware.airxmail.imap.IMAP4ListEvent;
+	import com.coltware.commons.job.IBlockable;
 	import com.coltware.commons.utils.StringLineReader;
 	
 	import mx.utils.StringUtil;
 
-	public class SearchCommand extends IMAP4Command
+	public class SearchCommand extends IMAP4Command implements IBlockable
 	{
 		private var _useUid:Boolean = false;
 		
@@ -33,6 +34,10 @@ package com.coltware.airxmail.imap.command
 			this.value = args;
 		}
 		
+		public function isBlock():Boolean{
+			return true;
+		}
+		
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String;
 			while(line = reader.next()){
@@ -40,8 +45,15 @@ package com.coltware.airxmail.imap.command
 				if(pos > 0){
 					var value:String = line.substr(pos + "SEARCH".length);
 					value = StringUtil.trim(value);
-					var reg:RegExp = /\s+/;
-					var list:Array = value.split(reg);
+					var list:Array;
+					
+					if(value.length > 0){
+						var reg:RegExp = /\s+/;
+						list = value.split(reg);
+					}
+					else{
+						list = new Array();
+					}
 					var event:IMAP4ListEvent;
 					if(_useUid){
 						event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_UID_LIST);
