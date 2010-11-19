@@ -8,6 +8,7 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
 	import com.coltware.commons.utils.StringLineReader;
 	
@@ -109,7 +110,7 @@ package com.coltware.airxmail.imap.command
 			
 			var val2:String = value.substring(pos3 + 1,pos4);
 			
-			var folder:IMAP4Folder = new IMAP4Folder(val1,val2);
+			var folder:IMAP4Folder = new IMAP4Folder(val1,val2,null);
 			folders.push(folder);
 		}
 	}

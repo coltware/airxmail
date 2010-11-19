@@ -29,7 +29,12 @@ package com.coltware.airxmail.imap
 		}
 		
 		public function get length():int{
-			return _listArray.length;
+			if(_listArray){
+				return _listArray.length;
+			}
+			else{
+				return 0;
+			}
 		}
 		
 		public function getValue(i:int):String{

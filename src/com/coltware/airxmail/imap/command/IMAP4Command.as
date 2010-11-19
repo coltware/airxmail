@@ -20,6 +20,10 @@ package com.coltware.airxmail.imap.command
 	
 	use namespace airxmail_internal;
 	
+	[Event(name="imap4CommandOk",type="com.coltware.airxmail.imap.IMAP4Event")]
+	[Event(name="imap4CommandNo",type="com.coltware.airxmail.imap.IMAP4Event")]
+	[Event(name="imap4CommandBad",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
 	public class IMAP4Command extends EventDispatcher
 	{
 		public static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.command.IMAP4Command");
@@ -32,7 +36,6 @@ package com.coltware.airxmail.imap.command
 		public var resultBytes:ByteArray;
 		
 		public var client:IMAP4Client;
-		
 		
 		public function IMAP4Command()
 		{
