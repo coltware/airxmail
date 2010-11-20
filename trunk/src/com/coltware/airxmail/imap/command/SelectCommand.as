@@ -55,7 +55,6 @@ package com.coltware.airxmail.imap.command
 			this.addEventListener(Event.COMPLETE,f,false,1,true);
 		}
 		
-		
 		public function isBlock():Boolean{
 			return true;
 		}

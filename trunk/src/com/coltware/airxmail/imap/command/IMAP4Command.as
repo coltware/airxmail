@@ -55,10 +55,9 @@ package com.coltware.airxmail.imap.command
 			
 		}
 		
-		airxmail_internal function $result_parse():void{
-			resultBytes.position = 0;
+		airxmail_internal function $result_parse(bytes:ByteArray):void{
 			var lineReader:StringLineReader = new StringLineReader();
-			lineReader.source = resultBytes;
+			lineReader.source = bytes;
 			this.parseResult(lineReader);
 		}
 	}
