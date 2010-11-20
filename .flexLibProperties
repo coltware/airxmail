@@ -56,6 +56,8 @@
     <classEntry path="com.coltware.airxmail.imap.IMAP4Flag"/>
     <classEntry path="com.coltware.airxmail.imap.chain.ISelect"/>
     <classEntry path="com.coltware.airxmail.imap.chain.ISearch"/>
+    <classEntry path="com.coltware.airxmail.TextSocketReader"/>
+    <classEntry path="com.coltware.airxmail.TextSocketReaderEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

@@ -41,28 +41,37 @@ package com.coltware.airxmail.imap.command
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String;
 			while(line = reader.next()){
-				var pos:int = line.indexOf("SEARCH");
-				if(pos > 0){
-					var value:String = line.substr(pos + "SEARCH".length);
-					value = StringUtil.trim(value);
-					var list:Array;
+				
+				if(line.substr(0,1) == "*"){
+				
+					log.debug("line>" + line);
+					if(!this._useUid){
+						log.debug(line);
+					}
 					
-					if(value.length > 0){
-						var reg:RegExp = /\s+/;
-						list = value.split(reg);
+					var pos:int = line.indexOf("SEARCH");
+					if(pos > 0){
+						var value:String = line.substr(pos + "SEARCH".length);
+						value = StringUtil.trim(value);
+						var list:Array;
+						
+						if(value.length > 0){
+							var reg:RegExp = /\s+/;
+							list = value.split(reg);
+						}
+						else{
+							list = new Array();
+						}
+						var event:IMAP4ListEvent;
+						if(_useUid){
+							event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_UID_LIST);
+						}
+						else{
+							event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_LIST);
+						}
+						event.result = list;
+						client.dispatchEvent(event);
 					}
-					else{
-						list = new Array();
-					}
-					var event:IMAP4ListEvent;
-					if(_useUid){
-						event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_UID_LIST);
-					}
-					else{
-						event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_LIST);
-					}
-					event.result = list;
-					client.dispatchEvent(event);
 				}
 			}
 		}

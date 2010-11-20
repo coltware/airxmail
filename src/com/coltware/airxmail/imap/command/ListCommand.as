@@ -68,11 +68,13 @@ package com.coltware.airxmail.imap.command
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String;
 			while(line = reader.next()){
-				var pos:int = line.indexOf(this.key);
-				if(pos > 0 ){
-					var value:String = line.substr(pos + this.key.length);
-					value = StringUtil.trim(value);
-					this._parse_list_line(value);
+				if(line.substr(0,1) == "*"){
+					var pos:int = line.indexOf(this.key);
+					if(pos > 0 ){
+						var value:String = line.substr(pos + this.key.length);
+						value = StringUtil.trim(value);
+						this._parse_list_line(value);
+					}
 				}
 			}
 		}

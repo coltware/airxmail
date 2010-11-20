@@ -206,7 +206,7 @@ package com.coltware.airxmail
 		}
 		
 		override public function dumpLog():void{
-			log.debug("type is " + this.getValue());
+			//log.debug("type is " + this.getValue());
 		}
 	}
 }

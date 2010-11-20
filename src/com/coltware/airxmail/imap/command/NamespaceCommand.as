@@ -39,16 +39,18 @@ package com.coltware.airxmail.imap.command
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String;
 			while(line = reader.next()){
-				line = StringUtil.trim(line);
-				var pos:int = line.indexOf(this.key);
-				if(pos > 0){
-					var value:String = line.substr(pos+ this.key.length);
-					var rest:String;
+				if(line.substr(0,1) == "*"){
+					line = StringUtil.trim(line);
+					var pos:int = line.indexOf(this.key);
+					if(pos > 0){
+						var value:String = line.substr(pos+ this.key.length);
+						var rest:String;
 					
-					rest = this.parse_ns_value(value,myspace);
-					rest = this.parse_ns_value(rest,otherspace);
-					this.parse_ns_value(rest,publicspace);
+						rest = this.parse_ns_value(value,myspace);
+						rest = this.parse_ns_value(rest,otherspace);
+						this.parse_ns_value(rest,publicspace);
 					
+					}
 				}
 			}
 		}

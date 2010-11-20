@@ -8,7 +8,9 @@
  */
 package com.coltware.airxmail.imap
 {
+	import com.coltware.airxmail.TextSocketReaderEvent;
 	import com.coltware.airxmail.MailParser;
+	import com.coltware.airxmail.TextSocketReader;
 	import com.coltware.airxmail.imap.chain.ISearch;
 	import com.coltware.airxmail.imap.chain.ISelect;
 	import com.coltware.airxmail.imap.command.CapabilityCommand;
@@ -62,6 +64,7 @@ package com.coltware.airxmail.imap
 	public class IMAP4Client extends SocketJobSync
 	{
 		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.IMAP4Client");
+		private static const _log:ILogger = Log.getLogger("com.coltware.airxmail_internal.IMAP4");
 		
 		private var _tag_prefix:String = "AX";
 		
@@ -72,6 +75,9 @@ package com.coltware.airxmail.imap
 		
 		private var _lineReader:StringLineReader;
 		private var _resultReader:StringLineReader;
+		
+		private var _socketReader:TextSocketReader;
+		
 		private var _bytes:ByteArray;
 		private var _parser:MailParser;
 		
@@ -92,6 +98,8 @@ package com.coltware.airxmail.imap
 			
 			this.port = 143;
 			
+			_socketReader = new TextSocketReader();
+			_socketReader.addEventListener(TextSocketReaderEvent.TEXT_SOCKET_LINE, handleLine);
 		}
 		
 		public function setAuth(user:String,pswd:String):void{
@@ -151,6 +159,12 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		public function lsubBlocking(base:String = "",mailbox:String = "*"):void{
+			var job:LsubCommand = new LsubCommand(base,mailbox);
+			job.block(true);
+			this.addJob(job);
+		}
+		
 		public function select(folder:Object):ISearch{
 			var job:SelectCommand = new SelectCommand(folder);
 			this.addJob(job);
@@ -206,7 +220,7 @@ package com.coltware.airxmail.imap
 				this._sock.writeUTFBytes(cmd + "\r\n");
 				this._sock.flush();
 				
-				log.debug("write imap4 cmd [" + cmd + "]");
+				_log.debug("CMD[" + cmd + "]");
 			}
 			else{
 				var evt:IOErrorEvent = new IOErrorEvent(IOErrorEvent.IO_ERROR);
@@ -215,98 +229,90 @@ package com.coltware.airxmail.imap
 		}
 		
 		override protected function handleData(pe:ProgressEvent):void{
+			_socketReader.parse(IDataInput(_sock));
+		}
+		
+		protected function handleLine(lineEvt:TextSocketReaderEvent):void{
+			var bytes:ByteArray = lineEvt.lineBytes;
 			
-			var buf:ByteArray;
+			bytes.position = 0;
 			
 			if(this.isServiceReady){
 				if(this.currentJob){
 					var job:IMAP4Command = this.currentJob as IMAP4Command;
 					var tag:String = job.tag;
 					var tlen:int = tag.length;
-					var line:String;
-				
-					_lineReader.source = IDataInput(_sock);
-					while(line = _lineReader.next()){
+					
+					var line:String = bytes.readUTFBytes(bytes.bytesAvailable);
+
+					if(line.substr(0,tlen) == tag){
+						_log.debug("[" + tag + "]>" + StringUtil.trim(line));
+						// Status Line
+						var reg:RegExp = /\s+/;
+						var arr:Array = line.split(reg);
 						
-						if(!job is MessageCommand){
-							log.debug("[" + tag + "]>" + line);
-						}
-						
-						if(line.substr(0,tlen) == tag){
-							//  Status line
-							var reg:RegExp = /\s+/;
-							var arr:Array = line.split(reg);
-							if(arr.length > 1){
-								var status:String = arr[1];
-								job.status = status;
-								if(status == "OK"){
-									job.$result_parse();
-									
-									
-									if(job is CapabilityCommand){
-										this._capabilityCmd = job as CapabilityCommand;
+						if(arr.length > 1){
+							var status:String = arr[1];
+							job.status = status;
+							if(status == "OK"){
+								var result:ByteArray = new ByteArray();
+								_socketReader.resultBytes.readBytes(result,0,_socketReader.resultBytes.bytesAvailable);
+								result.position = 0;
+								job.$result_parse(result);
+								if(job is CapabilityCommand){
+									this._capabilityCmd = job as CapabilityCommand;
+								}
+								else if(job is LoginCommand){
+									if(this._capabilityCmd && this._capabilityCmd.has("NAMESPACE")){
+										var njob:NamespaceCommand = new NamespaceCommand();
+										this.addJobAt(njob,0);
 									}
-									else if(job is LoginCommand){
-										if(this._capabilityCmd && this._capabilityCmd.has("NAMESPACE")){
-											var njob:NamespaceCommand = new NamespaceCommand();
-											this.addJobAt(njob,0);
-										}
-									}
-									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
-									eventOk.$command = job;
-									eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
-									
-									this.dispatchEvent(eventOk);
-									
-									this.commitJob();
 								}
-								else if(status == "NO"){
-									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
-									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
-									
-									this.dispatchEvent(eventNo);
-								}
-								else if(status == "BAD"){
-									var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
-									eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
-									
-									this.dispatchEvent(eventBad);
-								}
+								var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
+								eventOk.$command = job;
+								eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
 								
+								this.dispatchEvent(eventOk);
+								_socketReader.clear();
+								
+								this.commitJob();
 							}
-							else{
-								// @TODO Error handler
+							else if(status == "NO"){
+								var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
+								eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
+								
+								this.dispatchEvent(eventNo);
+								_socketReader.clear();
 							}
-							
+							else if(status == "BAD"){
+								var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
+								eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
+								
+								this.dispatchEvent(eventBad);
+								_socketReader.clear();
+							}
 						}
-						else{
-							job.resultBytes.writeBytes(_lineReader.lastBytearray());
-						}
-						
 					}
 				}
 				else{
-					// @TODO Handle Error
-					log.warn("null command error...");
+					// TODO Error handle
 				}
-				
 			}
 			else{
-				this.handleNotServiceReady(pe);
+				this.handleNotServiceReady(bytes);
 			}
 		}
+		
+		
 		/**
 		 * サービスがまだ準備できていない時の処理
 		 */
-		private function handleNotServiceReady(pe:ProgressEvent):void{
-			var line:String;
-			_lineReader.source = IDataInput(_sock);
-			while(line = _lineReader.next()){
-					line = StringUtil.trim(line);
-					if(line.substr(0,4) == "* OK"){
-						this.serviceReady();
-						break;
-					}
+		private function handleNotServiceReady(lineBytes:ByteArray):void{
+			lineBytes.position = 0;
+			var line:String = StringUtil.trim(lineBytes.readUTFBytes(lineBytes.bytesAvailable));
+			if(line.substr(0,4) == "* OK"){
+				_socketReader.clear();
+				this.serviceReady();
 			}
 			var e:IMAP4Event;
 			if(this.isServiceReady){
@@ -319,7 +325,5 @@ package com.coltware.airxmail.imap
 			e.client = this;
 			this.dispatchEvent(e);
 		}
-		
-		
 	}
 }
