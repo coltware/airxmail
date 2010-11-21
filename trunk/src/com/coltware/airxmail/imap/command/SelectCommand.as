@@ -81,11 +81,6 @@ package com.coltware.airxmail.imap.command
 			}
 			var event:Event = new Event(Event.COMPLETE);
 			this.dispatchEvent(event);
-			/*
-			log.debug("exists :[" + this._exists + "]");
-			log.debug("recent:[" + this._recent + "]");
-			log.debug("uid:[" + this._uidvalidity + "]");
-			*/
 		}
 		
 		private function _parse_exists(line:String):Boolean{
