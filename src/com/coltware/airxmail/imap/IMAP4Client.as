@@ -8,14 +8,15 @@
  */
 package com.coltware.airxmail.imap
 {
-	import com.coltware.airxmail.TextSocketReaderEvent;
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.TextSocketReader;
+	import com.coltware.airxmail.TextSocketReaderEvent;
 	import com.coltware.airxmail.imap.chain.ISearch;
 	import com.coltware.airxmail.imap.chain.ISelect;
 	import com.coltware.airxmail.imap.command.CapabilityCommand;
 	import com.coltware.airxmail.imap.command.CreateCommand;
 	import com.coltware.airxmail.imap.command.DeleteCommand;
+	import com.coltware.airxmail.imap.command.ExamineCommand;
 	import com.coltware.airxmail.imap.command.IMAP4Command;
 	import com.coltware.airxmail.imap.command.ListCommand;
 	import com.coltware.airxmail.imap.command.LoginCommand;
@@ -27,6 +28,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.RenameCommand;
 	import com.coltware.airxmail.imap.command.SearchCommand;
 	import com.coltware.airxmail.imap.command.SelectCommand;
+	import com.coltware.airxmail.imap.command.StoreCommand;
 	import com.coltware.airxmail_internal;
 	import com.coltware.commons.job.SocketJobSync;
 	import com.coltware.commons.utils.StringLineReader;
@@ -165,8 +167,14 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
-		public function select(folder:Object):ISearch{
+		public function selectMailbox(folder:Object):ISearch{
 			var job:SelectCommand = new SelectCommand(folder);
+			this.addJob(job);
+			return job;
+		}
+		
+		public function examineMailbox(folder:Object):ISearch{
+			var job:ExamineCommand = new ExamineCommand(folder);
 			this.addJob(job);
 			return job;
 		}
@@ -193,6 +201,16 @@ package com.coltware.airxmail.imap
 		
 		public function renameMailbox(oldmailbox:String,newmailbox:String):void{
 			var job:RenameCommand = new RenameCommand(oldmailbox,newmailbox);
+			this.addJob(job);
+		}
+		
+		public function addFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
+			var job:StoreCommand = new StoreCommand(StoreCommand.ADD,msgid,flags,useUid);
+			this.addJob(job);
+		}
+		
+		public function removeFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
+			var job:StoreCommand = new StoreCommand(StoreCommand.REMOVE,msgid,flags,useUid);
 			this.addJob(job);
 		}
 		
@@ -246,7 +264,7 @@ package com.coltware.airxmail.imap
 					var line:String = bytes.readUTFBytes(bytes.bytesAvailable);
 
 					if(line.substr(0,tlen) == tag){
-						_log.debug("[" + tag + "]>" + StringUtil.trim(line));
+						//_log.debug("[" + tag + "]>" + StringUtil.trim(line));
 						// Status Line
 						var reg:RegExp = /\s+/;
 						var arr:Array = line.split(reg);
