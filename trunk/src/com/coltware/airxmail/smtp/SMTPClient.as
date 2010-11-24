@@ -9,8 +9,8 @@
 package com.coltware.airxmail.smtp
 {
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.job.SocketJobSync;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.job.SocketJobSync;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
@@ -44,15 +44,15 @@ package com.coltware.airxmail.smtp
 	/**
 	 *  method stack is empty
 	 * 
-	 * @eventType com.coltware.commons.job.JobEvent.JOB_STACK_EMPTY
+	 * @eventType com.coltware.airxlib.job.JobEvent.JOB_STACK_EMPTY
 	 */
-	[Event(name="jobStackEmpty",type="com.coltware.commons.job.JobEvent")]
+	[Event(name="jobStackEmpty",type="com.coltware.airxlib.job.JobEvent")]
 	/**
 	 *  job idle timeout
 	 * 
-	 * @eventType com.coltware.commons.job.JobEvent.JOB_IDLE_TIMEOUT
+	 * @eventType com.coltware.airxlib.job.JobEvent.JOB_IDLE_TIMEOUT
 	 */
-	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
+	[Event(name="jobIdleTimeout",type="com.coltware.airxlib.job.JobEvent")]
 	
 	/**
 	 *  SMTPレベルで接続ができなかったときのイベント.

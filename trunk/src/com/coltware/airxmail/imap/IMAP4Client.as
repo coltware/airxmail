@@ -30,8 +30,8 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.SelectCommand;
 	import com.coltware.airxmail.imap.command.StoreCommand;
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.job.SocketJobSync;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.job.SocketJobSync;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -45,8 +45,8 @@ package com.coltware.airxmail.imap
 	
 	use namespace airxmail_internal;
 	
-	[Event(name="jobStackEmpty",type="com.coltware.commons.job.JobEvent")]
-	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
+	[Event(name="jobStackEmpty",type="com.coltware.airxlib.job.JobEvent")]
+	[Event(name="jobIdleTimeout",type="com.coltware.airxlib.job.JobEvent")]
 	
 	[Event(name="imap4ResultUidList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	[Event(name="imap4ResultList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]

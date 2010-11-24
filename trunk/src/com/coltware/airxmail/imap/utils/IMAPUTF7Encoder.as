@@ -23,6 +23,10 @@ package com.coltware.airxmail.imap.utils
 		
 		public function encode(value:String):String{
 			
+			var bytes:ByteArray = new ByteArray();
+			for(var i:int=0; i<value.length; i++){
+				
+			}
 			//
 			//  TODO dummy code
 			//

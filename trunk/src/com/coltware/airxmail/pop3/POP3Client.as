@@ -10,8 +10,8 @@ package com.coltware.airxmail.pop3
 {
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.job.SocketJobSync;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.job.SocketJobSync;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -33,8 +33,8 @@ package com.coltware.airxmail.pop3
 	 */
 	[Event(name="ioError",type="flash.events.IOErrorEvent")]
 	
-	[Event(name="jobStackEmpty",type="com.coltware.commons.job.JobEvent")]
-	[Event(name="jobIdleTimeout",type="com.coltware.commons.job.JobEvent")]
+	[Event(name="jobStackEmpty",type="com.coltware.airxlib.job.JobEvent")]
+	[Event(name="jobIdleTimeout",type="com.coltware.airxlib.job.JobEvent")]
 	
 	[Event(name="pop3ResultStat",type="com.coltware.airxmail.pop3.POP3Event")]
 	

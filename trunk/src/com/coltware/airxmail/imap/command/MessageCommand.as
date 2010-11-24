@@ -10,7 +10,7 @@ package com.coltware.airxmail.imap.command
 {
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.imap.IMAP4MessageEvent;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.utils.ByteArray;
 
