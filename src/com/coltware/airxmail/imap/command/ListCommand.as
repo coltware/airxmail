@@ -11,8 +11,8 @@ package com.coltware.airxmail.imap.command
 	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.job.IBlockable;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.job.IBlockable;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;

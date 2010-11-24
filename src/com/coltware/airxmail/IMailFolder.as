@@ -27,5 +27,6 @@ package com.coltware.airxmail
 		function hasEventListener(type:String):Boolean;
 
 		function willTrigger(type:String):Boolean;
+		
 	}
 }

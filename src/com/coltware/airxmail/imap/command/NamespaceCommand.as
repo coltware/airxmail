@@ -10,7 +10,7 @@ package com.coltware.airxmail.imap.command
 {
 	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;

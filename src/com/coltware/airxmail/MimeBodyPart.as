@@ -12,7 +12,7 @@ package com.coltware.airxmail
 	
 	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.utils.StringLineReader;
+	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.EventDispatcher;
 	import flash.utils.*;

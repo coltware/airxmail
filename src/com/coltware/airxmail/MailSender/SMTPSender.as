@@ -14,7 +14,7 @@ package com.coltware.airxmail.MailSender
 	import com.coltware.airxmail.smtp.SMTPClient;
 	import com.coltware.airxmail.smtp.SMTPEvent;
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.job.JobEvent;
+	import com.coltware.airxlib.job.JobEvent;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;

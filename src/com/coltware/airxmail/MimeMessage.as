@@ -9,7 +9,7 @@
 package com.coltware.airxmail
 {
 	import com.coltware.airxmail_internal;
-	import com.coltware.commons.utils.DateUtils;
+	import com.coltware.airxlib.utils.DateUtils;
 	
 	import flash.utils.*;
 	

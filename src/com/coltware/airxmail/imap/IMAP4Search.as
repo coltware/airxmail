@@ -8,7 +8,7 @@
  */
 package com.coltware.airxmail.imap
 {
-	import com.coltware.commons.utils.DateUtils;
+	import com.coltware.airxlib.utils.DateUtils;
 
 	public class IMAP4Search
 	{
