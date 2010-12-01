@@ -61,6 +61,8 @@
     <classEntry path="com.coltware.airxmail.smtp.SMTPClient"/>
     <classEntry path="com.coltware.airxmail.smtp.SMTPEvent"/>
     <classEntry path="com.coltware.airxmail_internal"/>
+    <classEntry path="com.coltware.airxmail.imap.command.IdleCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4PushEvent"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
