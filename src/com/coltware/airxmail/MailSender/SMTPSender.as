@@ -150,6 +150,10 @@ package com.coltware.airxmail.MailSender
 			client.addEventListener(type,listener,useCapture,priority,useWeakReference);
 		}
 		
+		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void{
+			client.removeEventListener(type,listener,useCapture);
+		}
+		
 		/**
 		 *  Senderに依存したパラメータの値を指定する.
 		 * 

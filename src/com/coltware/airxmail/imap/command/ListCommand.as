@@ -95,8 +95,6 @@ package com.coltware.airxmail.imap.command
 					var ret2:Array = this._parse_quato_value(ret[1]);
 					var folder:IMAP4Folder = new IMAP4Folder(ret2[0],ret[0],attrs);
 					
-					trace(attrs);
-					
 					var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
 					event.client = this.client;
 					event.$command = this;

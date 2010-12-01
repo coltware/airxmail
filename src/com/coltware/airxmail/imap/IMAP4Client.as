@@ -8,6 +8,8 @@
  */
 package com.coltware.airxmail.imap
 {
+	import com.coltware.airxlib.job.SocketJobSync;
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.TextSocketReader;
 	import com.coltware.airxmail.TextSocketReaderEvent;
@@ -18,6 +20,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.DeleteCommand;
 	import com.coltware.airxmail.imap.command.ExamineCommand;
 	import com.coltware.airxmail.imap.command.IMAP4Command;
+	import com.coltware.airxmail.imap.command.IdleCommand;
 	import com.coltware.airxmail.imap.command.ListCommand;
 	import com.coltware.airxmail.imap.command.LoginCommand;
 	import com.coltware.airxmail.imap.command.LogoutCommand;
@@ -30,14 +33,13 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.SelectCommand;
 	import com.coltware.airxmail.imap.command.StoreCommand;
 	import com.coltware.airxmail_internal;
-	import com.coltware.airxlib.job.SocketJobSync;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
 	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
+	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -91,6 +93,9 @@ package com.coltware.airxmail.imap
 		
 		private var _capabilityCmd:CapabilityCommand;
 		
+		private var _isIdle:Boolean = false;
+		private var _isIdleDone:Boolean = false;
+		
 		public function IMAP4Client(target:IEventDispatcher=null)
 		{
 			super(target);
@@ -142,6 +147,11 @@ package com.coltware.airxmail.imap
 			if(tag){
 				job.tag = tag;
 			}
+			this.addJob(job);
+		}
+		
+		public function idle():void{
+			var job:IdleCommand = new IdleCommand();
 			this.addJob(job);
 		}
 		
@@ -239,6 +249,12 @@ package com.coltware.airxmail.imap
 				this._sock.flush();
 				
 				_log.debug("CMD[" + cmd + "]");
+				
+				if(imap4cmd is IdleCommand){
+					this._isIdle = true;
+					this._isIdleDone = false;
+				}
+				
 			}
 			else{
 				var evt:IOErrorEvent = new IOErrorEvent(IOErrorEvent.IO_ERROR);
@@ -253,61 +269,78 @@ package com.coltware.airxmail.imap
 		protected function handleLine(lineEvt:TextSocketReaderEvent):void{
 			var bytes:ByteArray = lineEvt.lineBytes;
 			
-			bytes.position = 0;
+			bytes.position = 0;		
 			
 			if(this.isServiceReady){
-				if(this.currentJob){
+				
+				if(this.currentJob ){
 					var job:IMAP4Command = this.currentJob as IMAP4Command;
-					var tag:String = job.tag;
-					var tlen:int = tag.length;
-					
 					var line:String = bytes.readUTFBytes(bytes.bytesAvailable);
-
-					if(line.substr(0,tlen) == tag){
-						//_log.debug("[" + tag + "]>" + StringUtil.trim(line));
-						// Status Line
-						var reg:RegExp = /\s+/;
-						var arr:Array = line.split(reg);
+					
+					if(this.currentJob is IdleCommand && this._isIdleDone == false){
 						
-						if(arr.length > 1){
-							var status:String = arr[1];
-							job.status = status;
-							if(status == "OK"){
-								var result:ByteArray = new ByteArray();
-								_socketReader.resultBytes.readBytes(result,0,_socketReader.resultBytes.bytesAvailable);
-								result.position = 0;
-								job.$result_parse(result);
-								if(job is CapabilityCommand){
-									this._capabilityCmd = job as CapabilityCommand;
-								}
-								else if(job is LoginCommand){
-									if(this._capabilityCmd && this._capabilityCmd.has("NAMESPACE")){
-										var njob:NamespaceCommand = new NamespaceCommand();
-										this.addJobAt(njob,0);
+						if(this._isIdle){
+							line = StringUtil.trim(line);
+							if(line.substr(0,1) == "*"){
+								//  "*" を含む何らかの返事が返ってきた
+								this._isIdle = false;
+								//  何をもって一連のレスポンスが終わっていると見なすかが不明・・・なので、
+								//  1.5秒後にDONEを送る。特にその根拠はないが、そのくらい待てば大丈夫だと思うから
+								setTimeout(_commitIdleJob,1500);
+							}
+						}
+					}
+					else{
+					
+						var tag:String = job.tag;
+						var tlen:int = tag.length;
+	
+						if(line.substr(0,tlen) == tag){
+							//_log.debug("[" + tag + "]>" + StringUtil.trim(line));
+							// Status Line
+							var reg:RegExp = /\s+/;
+							var arr:Array = line.split(reg);
+							
+							if(arr.length > 1){
+								var status:String = arr[1];
+								job.status = status;
+								if(status == "OK"){
+									var result:ByteArray = new ByteArray();
+									_socketReader.resultBytes.readBytes(result,0,_socketReader.resultBytes.bytesAvailable);
+									result.position = 0;
+									job.$result_parse(result);
+									if(job is CapabilityCommand){
+										this._capabilityCmd = job as CapabilityCommand;
 									}
+									else if(job is LoginCommand){
+										if(this._capabilityCmd && this._capabilityCmd.has("NAMESPACE")){
+											var njob:NamespaceCommand = new NamespaceCommand();
+											this.addJobAt(njob,0);
+										}
+									}
+									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
+									eventOk.$command = job;
+									eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
+									
+									this.dispatchEvent(eventOk);
+									_socketReader.clear();
+									
+									this.commitJob();
 								}
-								var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
-								eventOk.$command = job;
-								eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
-								
-								this.dispatchEvent(eventOk);
-								_socketReader.clear();
-								
-								this.commitJob();
-							}
-							else if(status == "NO"){
-								var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
-								eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
-								
-								this.dispatchEvent(eventNo);
-								_socketReader.clear();
-							}
-							else if(status == "BAD"){
-								var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
-								eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
-								
-								this.dispatchEvent(eventBad);
-								_socketReader.clear();
+								else if(status == "NO"){
+									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
+									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
+									
+									this.dispatchEvent(eventNo);
+									_socketReader.clear();
+								}
+								else if(status == "BAD"){
+									var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
+									eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
+									
+									this.dispatchEvent(eventBad);
+									_socketReader.clear();
+								}
 							}
 						}
 					}
@@ -342,6 +375,17 @@ package com.coltware.airxmail.imap
 			}
 			e.client = this;
 			this.dispatchEvent(e);
+		}
+		
+		/**
+		 *  IDLEコマンドで何らかの結果が帰ってきたときの処理
+		 * 
+		 */
+		private function _commitIdleJob():void{
+			log.debug("_commitIdleJob");
+			this._sock.writeUTFBytes("DONE\r\n");
+			this._sock.flush();
+			this._isIdleDone = true;
 		}
 	}
 }
