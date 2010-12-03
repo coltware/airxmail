@@ -8,9 +8,9 @@
  */
 package com.coltware.airxmail.smtp
 {
-	import com.coltware.airxmail_internal;
 	import com.coltware.airxlib.job.SocketJobSync;
 	import com.coltware.airxlib.utils.StringLineReader;
+	import com.coltware.airxmail_internal;
 	
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
@@ -137,6 +137,9 @@ package com.coltware.airxmail.smtp
 		private var _timeout_msec:int = 10000;
 		private var _timeout_uint:int = 0;
 		
+		//  自動的なSTARTTLSコマンドをサポートするか
+		private var _support_auto_starttls:Boolean = false;
+		
 		
 		public function SMTPClient()
 		{
@@ -154,10 +157,15 @@ package com.coltware.airxmail.smtp
 			this._timeout_msec = val;
 		}
 		
+		/**
+		 *   EHLO の結果にSTARTTLSがあった場合には自動的にSTARTTLSを実行する
+		 */
+		public function set autoSTARTTLS(val:Boolean):void{
+			this._support_auto_starttls = val;
+		}
+		
 		override public function connect():void{
 			super.connect();
-			
-			
 		}
 		
 		override protected function connectHandler(ce:Event):void{
@@ -448,7 +456,9 @@ package com.coltware.airxmail.smtp
 										var msg:String = line.substr(4);
 										msg = StringUtil.trim(msg);
 										if(msg == "STARTTLS"){
-											this.starttls();
+											if(_support_auto_starttls || this.hasEventListener(SMTPEvent.SMTP_START_TLS)){
+												this.starttls();
+											}
 										}
 									}
 								}
