@@ -63,6 +63,7 @@
     <classEntry path="com.coltware.airxmail_internal"/>
     <classEntry path="com.coltware.airxmail.imap.command.IdleCommand"/>
     <classEntry path="com.coltware.airxmail.imap.IMAP4PushEvent"/>
+    <classEntry path="com.coltware.airxmail.pop3.command.POP3Command"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
