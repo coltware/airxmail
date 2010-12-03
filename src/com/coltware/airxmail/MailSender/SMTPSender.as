@@ -8,13 +8,13 @@
  */
 package com.coltware.airxmail.MailSender
 {	
+	import com.coltware.airxlib.job.JobEvent;
 	import com.coltware.airxmail.IMailSender;
 	import com.coltware.airxmail.MailEvent;
 	import com.coltware.airxmail.MimeMessage;
 	import com.coltware.airxmail.smtp.SMTPClient;
 	import com.coltware.airxmail.smtp.SMTPEvent;
 	import com.coltware.airxmail_internal;
-	import com.coltware.airxlib.job.JobEvent;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -110,6 +110,8 @@ package com.coltware.airxmail.MailSender
 		public static const BUFFER_SIZE:String = "bufferSize";
 		public static const ENABLE_BUFFER:String = "enableBuffer";
 		
+		public static const AUTO_STARTTLS:String = "autoStartTLS";
+		
 		
 		private var client:SMTPClient;
 		private var currentMessage:MimeMessage;
@@ -152,6 +154,10 @@ package com.coltware.airxmail.MailSender
 		
 		override public function removeEventListener(type:String, listener:Function, useCapture:Boolean=false):void{
 			client.removeEventListener(type,listener,useCapture);
+		}
+		
+		override public function hasEventListener(type:String):Boolean{
+			return client.hasEventListener(type);
 		}
 		
 		/**
@@ -211,6 +217,16 @@ package com.coltware.airxmail.MailSender
 						var tlsClz:Class = getDefinitionByName(TLS_CLASSNAME) as Class;
 						var tlsObj:Object = new tlsClz();
 						client.socketObject = obj;
+					}
+					break;
+				case AUTO_STARTTLS:
+					vstr = value as String;
+					vbool = value as Boolean;
+					if(vbool || ( vstr && vstr.toLowerCase() == "true")){
+						client.autoSTARTTLS = true;
+					}
+					else{
+						client.autoSTARTTLS = false;
 					}
 					break;
 				case SOCKET_OBJECT:
