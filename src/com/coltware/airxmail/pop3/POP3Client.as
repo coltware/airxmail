@@ -8,10 +8,11 @@
  */
 package com.coltware.airxmail.pop3
 {
-	import com.coltware.airxmail.MailParser;
-	import com.coltware.airxmail_internal;
 	import com.coltware.airxlib.job.SocketJobSync;
 	import com.coltware.airxlib.utils.StringLineReader;
+	import com.coltware.airxmail.MailParser;
+	import com.coltware.airxmail.pop3.command.POP3Command;
+	import com.coltware.airxmail_internal;
 	
 	import flash.events.IEventDispatcher;
 	import flash.events.IOErrorEvent;
@@ -132,12 +133,12 @@ package com.coltware.airxmail.pop3
 		public function connectAuth(user:String,pswd:String):void{
 			this.clearJobs();
 			super.connect();
-			var job1:Object = new Object();
+			var job1:POP3Command = new POP3Command();
 			job1.key = DO_USER;
 			job1.value = user;
 			this.addJob(job1);
 			
-			var job2:Object = new Object();
+			var job2:POP3Command = new POP3Command();
 			job2.key = DO_PASS;
 			job2.value = pswd;
 			this.addJob(job2);
@@ -149,12 +150,12 @@ package com.coltware.airxmail.pop3
 			
 			super.connect();
 			if(this._username){
-				var job1:Object = new Object();
+				var job1:POP3Command = new POP3Command();
 				job1.key = DO_USER;
 				job1.value = this._username;
 				this.addJob(job1);
 			
-				var job2:Object = new Object();
+				var job2:POP3Command = new POP3Command();
 				job2.key = DO_PASS;
 				job2.value = this._password;
 				this.addJob(job2);
@@ -189,27 +190,28 @@ package com.coltware.airxmail.pop3
 		}
 		
 		public function stat():void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_STAT;
 			job.value = "";
 			this.addJob(job);
 		}
 		public function noop():void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_NOOP;
 			job.value = "";
 			this.addJob(job);
 		}
 		
 		public function uidl():void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_UIDL;
 			job.value = "";
+			job.setBlock(true);
 			this.addJob(job);
 		}
 		
 		public function retr(i:int, uid:String = null):void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_RETR;
 			job.value = String(i);
 			job.uid = uid;
@@ -218,7 +220,7 @@ package com.coltware.airxmail.pop3
 			this.addJob(job);
 		}
 		public function dele(i:int):void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_DELE;
 			job.value = i;
 			this.addJob(job);
@@ -249,7 +251,7 @@ package com.coltware.airxmail.pop3
 		}
 		
 		public function list():void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_LIST;
 			job.value = "";
 			this.addJob(job);
@@ -257,7 +259,7 @@ package com.coltware.airxmail.pop3
 		}
 		
 		public function quit():void{
-			var job:Object = new Object();
+			var job:POP3Command = new POP3Command();
 			job.key = DO_QUIT;
 			job.value = "";
 			this.addJob(job);
@@ -293,7 +295,7 @@ package com.coltware.airxmail.pop3
 			
 			if(this.isServiceReady){
 				
-				var job:Object = this.currentJob;
+				var job:POP3Command = this.currentJob as POP3Command;
 				if(job == null){
 					log.warn("handleData [job is null]" + pe);
 					return;
@@ -426,7 +428,7 @@ package com.coltware.airxmail.pop3
 					var next:Boolean = true;
 					
 					while(line = _lineReader.next()){
-						if(job.status == null){
+						if(job.status == false){
 							log.info("[RETR]" + line);
 							l = StringUtil.trim(line);
 							if(l.substr(0,3) == "+OK"){
