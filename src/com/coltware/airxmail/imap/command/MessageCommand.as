@@ -1,5 +1,5 @@
 /**
- *  Copyright (c)  2009 coltware.com
+ *  Copyright (c)  2009-2011 coltware.com
  *  http://www.coltware.com 
  *
  *  License: LGPL v3 ( http://www.gnu.org/licenses/lgpl-3.0-standalone.html )
@@ -8,9 +8,9 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.imap.IMAP4MessageEvent;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.utils.ByteArray;
 
@@ -18,7 +18,7 @@ package com.coltware.airxmail.imap.command
 	{
 		private var _msgid:String;
 		
-		public function MessageCommand(msgid:String,useUid:Boolean = true)
+		public function MessageCommand(msgid:String,useUid:Boolean = true, option:String = "RFC822")
 		{
 			super();
 			if(useUid){
@@ -28,7 +28,7 @@ package com.coltware.airxmail.imap.command
 				this.key = "FETCH";
 			}
 			_msgid = msgid;
-			value = msgid + " RFC822";
+			this.value = _msgid + " " + option;
 		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
