@@ -92,6 +92,7 @@ package com.coltware.airxmail.pop3
 		private const DO_STAT:String = "STAT";
 		private const DO_LIST:String = "LIST";
 		private const DO_RETR:String = "RETR";
+		private const DO_TOP:String = "TOP";
 		private const DO_QUIT:String = "QUIT";
 		private const DO_DELE:String = "DELE";
 		private const DO_NOOP:String = "NOOP";
@@ -219,6 +220,15 @@ package com.coltware.airxmail.pop3
 			log.debug("addJob > " + job.key + " " + job.value);
 			this.addJob(job);
 		}
+		
+		public function head(i:int):void{
+			var job:POP3Command = new POP3Command();
+			job.key = DO_TOP;
+			job.value = String(i) + " 0";
+			
+			this.addJob(job);
+		}
+		
 		public function dele(i:int):void{
 			var job:POP3Command = new POP3Command();
 			job.key = DO_DELE;
@@ -273,7 +283,7 @@ package com.coltware.airxmail.pop3
 			else{
 				cmd = job.key;
 			}	
-			
+			log.debug("exec[" + cmd + "]");
 			if(this._sock.connected){
 				this._sock.writeUTFBytes(cmd +"\r\n");
 				this._sock.flush();
@@ -394,13 +404,16 @@ package com.coltware.airxmail.pop3
 								if(cmd == DO_LIST){
 									listEvent = new POP3ListEvent(POP3ListEvent.POP3_RESULT_LIST);	
 								}
-								else{
+								else if(cmd == DO_UIDL){
 									listEvent = new POP3ListEvent(POP3ListEvent.POP3_RESULT_UIDL);
 								}
-								listEvent.client = this;
-								listEvent.result = job.data;
-								this.dispatchEvent(listEvent);
-								this.commitJob();
+								
+								if(listEvent){
+									listEvent.client = this;
+									listEvent.result = job.data;
+									this.dispatchEvent(listEvent);
+									this.commitJob();
+								}
 							}
 							else{
 								var buf2:ByteArray = job.source as ByteArray;
@@ -423,7 +436,7 @@ package com.coltware.airxmail.pop3
 						}
 					}
 				}
-				else if(cmd == DO_RETR){
+				else if(cmd == DO_RETR  || cmd == DO_TOP){
 					var l:String;
 					var next:Boolean = true;
 					
