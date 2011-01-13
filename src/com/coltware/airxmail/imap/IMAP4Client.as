@@ -19,6 +19,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.CreateCommand;
 	import com.coltware.airxmail.imap.command.DeleteCommand;
 	import com.coltware.airxmail.imap.command.ExamineCommand;
+	import com.coltware.airxmail.imap.command.HeaderCommand;
 	import com.coltware.airxmail.imap.command.IMAP4Command;
 	import com.coltware.airxmail.imap.command.IdleCommand;
 	import com.coltware.airxmail.imap.command.ListCommand;
@@ -196,6 +197,11 @@ package com.coltware.airxmail.imap
 		
 		public function message(msgId:String,useUid:Boolean = true):void{
 			var job:MessageCommand = new MessageCommand(msgId,useUid);
+			this.addJob(job);
+		}
+		
+		public function header(msgId:String,useUid:Boolean = true):void{
+			var job:HeaderCommand = new HeaderCommand(msgId,useUid);
 			this.addJob(job);
 		}
 		
