@@ -1,8 +1,10 @@
 package com.coltware.airxmail.pop3
 {
+	import com.coltware.airxmail.IListEvent;
+	
 	import flash.events.Event;
 
-	public class POP3ListEvent extends POP3Event
+	public class POP3ListEvent extends POP3Event implements IListEvent
 	{
 		
 		public static const POP3_RESULT_UIDL:String = "pop3ResultUidl";
@@ -18,6 +20,10 @@ package com.coltware.airxmail.pop3
 		override public function set result(obj:Object):void{
 			super.result = obj;
 			_listArray = obj as Array;
+		}
+		
+		public function reverseList():void{
+			this._listArray = this._listArray.reverse();
 		}
 		
 		public function get length():int{

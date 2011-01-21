@@ -8,10 +8,12 @@
  */
 package com.coltware.airxmail.imap
 {
+	import com.coltware.airxmail.IListEvent;
+	
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
-	public class IMAP4ListEvent extends IMAP4Event
+	public class IMAP4ListEvent extends IMAP4Event implements IListEvent
 	{
 		public static const IMAP4_RESULT_UID_LIST:String = "imap4ResultUidList";
 		public static const IMAP4_RESULT_LIST:String			= "imap4ResultList";
@@ -35,6 +37,10 @@ package com.coltware.airxmail.imap
 			else{
 				return 0;
 			}
+		}
+		
+		public function reverseList():void{
+			this._listArray = _listArray.reverse();
 		}
 		
 		public function getValue(i:int):String{
