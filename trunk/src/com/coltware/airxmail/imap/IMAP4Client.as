@@ -48,8 +48,12 @@ package com.coltware.airxmail.imap
 	
 	use namespace airxmail_internal;
 	
+	[Event(name="ioError",type="flash.events.IOErrorEvent")]
+	[Event (name="securityError",type="flash.events.SecurityErrorEvent")]
+	
 	[Event(name="jobStackEmpty",type="com.coltware.airxlib.job.JobEvent")]
 	[Event(name="jobIdleTimeout",type="com.coltware.airxlib.job.JobEvent")]
+	[Event(name="jobInitFailure",type="com.coltware.airxlib.job.JobEvent")]
 	
 	[Event(name="imap4ResultUidList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	[Event(name="imap4ResultList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
@@ -334,6 +338,7 @@ package com.coltware.airxmail.imap
 									this.commitJob();
 								}
 								else if(status == "NO"){
+									_log.debug(line);
 									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
 									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
 									
@@ -341,6 +346,7 @@ package com.coltware.airxmail.imap
 									_socketReader.clear();
 								}
 								else if(status == "BAD"){
+									_log.debug(line);
 									var eventBad:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_BAD);
 									eventBad.$message = StringUtil.trim(line.substr(line.indexOf("BAD") + "BAD".length));
 									

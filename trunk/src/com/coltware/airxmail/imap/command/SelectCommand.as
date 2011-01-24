@@ -46,13 +46,11 @@ package com.coltware.airxmail.imap.command
 		}
 		
 		public function search(args:String,useUid:Boolean = true):void{
-			
 			var f:Function = function(evt:*):void{
-				log.debug("OK...");
 				removeEventListener(Event.COMPLETE,f);
 				client.search(args,useUid);
 			};
-			this.addEventListener(Event.COMPLETE,f,false,1,true);
+			this.addEventListener(Event.COMPLETE,f,false,0,false);
 		}
 		
 		public function isBlock():Boolean{
