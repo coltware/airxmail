@@ -9,6 +9,7 @@
 package com.coltware.airxmail.imap
 {
 	import com.coltware.airxmail.imap.utils.IMAPUTF7Decoder;
+	import com.coltware.airxmail.imap.utils.IMAPUTF7Encoder;
 	import com.coltware.airxmail_internal;
 	
 	import mx.logging.ILogger;
@@ -44,6 +45,11 @@ package com.coltware.airxmail.imap
 		
 		public function get name():String{
 			return _name;
+		}
+		
+		public function set nameUTF8(value:String):void{
+			var enc:IMAPUTF7Encoder = new IMAPUTF7Encoder();
+			this._name = enc.encode(value);
 		}
 		
 		public function get nameUTF8():String{

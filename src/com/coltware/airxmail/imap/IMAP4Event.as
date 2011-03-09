@@ -23,6 +23,10 @@ package com.coltware.airxmail.imap
 		public static const IMAP4_COMMAND_NO:String = "imap4CommandNo";
 		public static const IMAP4_COMMAND_OK:String = "imap4CommandOk";
 		
+		public static const IMAP4_AUTH_OK:String = "imap4AuthOk";
+		public static const IMAP4_AUTH_NG:String = "imap4AuthNg";
+		
+		public static const IMAP4_NAMESPACE_FOLDER:String = "imap4NamespaceFolder";
 		/**
 		 *  LIST command
 		 */

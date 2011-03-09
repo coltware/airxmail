@@ -41,6 +41,7 @@ package com.coltware.airxmail.imap.command
 			while(line = reader.next()){
 				if(line.substr(0,1) == "*"){
 					line = StringUtil.trim(line);
+					log.debug("namespace:[" + line + "]");
 					var pos:int = line.indexOf(this.key);
 					if(pos > 0){
 						var value:String = line.substr(pos+ this.key.length);
@@ -112,6 +113,7 @@ package com.coltware.airxmail.imap.command
 			
 			var val2:String = value.substring(pos3 + 1,pos4);
 			
+			log.debug("name:[" + val1 + "] , delim:[" + val2 + "]");
 			var folder:IMAP4Folder = new IMAP4Folder(val1,val2,null);
 			folders.push(folder);
 		}
