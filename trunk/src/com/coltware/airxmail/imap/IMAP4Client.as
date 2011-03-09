@@ -10,6 +10,7 @@ package com.coltware.airxmail.imap
 {
 	import com.coltware.airxlib.job.SocketJobSync;
 	import com.coltware.airxlib.utils.StringLineReader;
+	import com.coltware.airxmail.MailFolder.IMAP4MailFolder;
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.TextSocketReader;
 	import com.coltware.airxmail.TextSocketReaderEvent;
@@ -32,6 +33,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.RenameCommand;
 	import com.coltware.airxmail.imap.command.SearchCommand;
 	import com.coltware.airxmail.imap.command.SelectCommand;
+	import com.coltware.airxmail.imap.command.StatusCommand;
 	import com.coltware.airxmail.imap.command.StoreCommand;
 	import com.coltware.airxmail_internal;
 	
@@ -61,6 +63,9 @@ package com.coltware.airxmail.imap
 	[Event(name="imap4CommandOk",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4CommandNo",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4CommandBad",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
+	[Event(name="imap4AuthOk",type="com.coltware.airxmail.imap.IMAP4Event")]
+	[Event(name="imap4AuthNg",type="com.coltware.airxmail.imap.IMAP4Event")]
 	
 	[Event(name="imap4FolderResult",type="com.coltware.airxmail.imap.IMAP4Event")]
 	/**
@@ -100,6 +105,10 @@ package com.coltware.airxmail.imap
 		
 		private var _isIdle:Boolean = false;
 		private var _isIdleDone:Boolean = false;
+		
+		private var _auth:Boolean = false;
+		
+		private var _namespaceCmd:NamespaceCommand;
 		
 		public function IMAP4Client(target:IEventDispatcher=null)
 		{
@@ -209,6 +218,11 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		public function status(folder:Object):void{
+			var job:StatusCommand = new StatusCommand(folder);
+			this.addJob(job);
+		}
+		
 		public function createMailbox(mailbox:String):void{
 			var job:CreateCommand = new CreateCommand(mailbox);
 			this.addJob(job);
@@ -276,6 +290,7 @@ package com.coltware.airxmail.imap
 			_socketReader.parse(IDataInput(_sock));
 		}
 		
+		
 		protected function handleLine(lineEvt:TextSocketReaderEvent):void{
 			var bytes:ByteArray = lineEvt.lineBytes;
 			
@@ -326,6 +341,22 @@ package com.coltware.airxmail.imap
 										if(this._capabilityCmd && this._capabilityCmd.has("NAMESPACE")){
 											var njob:NamespaceCommand = new NamespaceCommand();
 											this.addJobAt(njob,0);
+											// NAMESPACEがあるときには、この処理の後にログイン済みとする
+										}
+										else{
+											//  fire login ok
+											var authOkEvt:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_AUTH_OK);
+											this.dispatchEvent(authOkEvt);
+											this._auth = true;
+										}
+										
+									}
+									else if(job is NamespaceCommand){
+										if(!this._auth){
+											var authOkEvt2:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_AUTH_OK);
+											this._namespaceCmd = job as NamespaceCommand;
+											this.dispatchEvent(authOkEvt2);
+											this._auth = true;
 										}
 									}
 									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
@@ -339,8 +370,18 @@ package com.coltware.airxmail.imap
 								}
 								else if(status == "NO"){
 									_log.debug(line);
+									
+									
+									
 									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
 									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
+									
+									if(job is LoginCommand){
+										var authNgEvt:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_AUTH_NG);
+										authNgEvt.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
+										this.dispatchEvent(authNgEvt);
+									}
+									
 									
 									this.dispatchEvent(eventNo);
 									_socketReader.clear();

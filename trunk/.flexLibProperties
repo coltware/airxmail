@@ -66,6 +66,8 @@
     <classEntry path="com.coltware.airxmail.pop3.command.POP3Command"/>
     <classEntry path="com.coltware.airxmail.imap.command.HeaderCommand"/>
     <classEntry path="com.coltware.airxmail.IListEvent"/>
+    <classEntry path="com.coltware.airxmail.MailFolder.IMAP4MailFolder"/>
+    <classEntry path="com.coltware.airxmail.imap.command.StatusCommand"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
