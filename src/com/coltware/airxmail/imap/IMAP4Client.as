@@ -20,6 +20,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.CreateCommand;
 	import com.coltware.airxmail.imap.command.DeleteCommand;
 	import com.coltware.airxmail.imap.command.ExamineCommand;
+	import com.coltware.airxmail.imap.command.ExpungeCommand;
 	import com.coltware.airxmail.imap.command.HeaderCommand;
 	import com.coltware.airxmail.imap.command.IMAP4Command;
 	import com.coltware.airxmail.imap.command.IdleCommand;
@@ -138,6 +139,20 @@ package com.coltware.airxmail.imap
 			
 		}
 		
+		public function getDefaultFolder():IMAP4Folder{
+			if(_namespaceCmd){
+				var folders:Array = this._namespaceCmd.getMyspaceFolders();
+				if(folders.length > 0){
+					var folder:IMAP4Folder = folders[0] as IMAP4Folder;
+					if(folder.nameUTF8 == ""){
+						folder.nameUTF8 = "INBOX";
+						return folder;
+					}
+				}
+			}
+			return null;
+		}
+		
 		/**
 		 *  Do capability command
 		 */
@@ -182,11 +197,13 @@ package com.coltware.airxmail.imap
 		
 		public function lsub(base:String = "",mailbox:String = "*"):void{
 			var job:LsubCommand = new LsubCommand(base,mailbox);
+			job.namespaceCommand = this._namespaceCmd;
 			this.addJob(job);
 		}
 		
 		public function lsubBlocking(base:String = "",mailbox:String = "*"):void{
 			var job:LsubCommand = new LsubCommand(base,mailbox);
+			job.namespaceCommand = this._namespaceCmd;
 			job.block(true);
 			this.addJob(job);
 		}
@@ -238,6 +255,12 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		public function addFlag(msgid:String,flag:String,useUid:Boolean = true):void{
+			var flags:Array = [flag];
+			var job:StoreCommand = new StoreCommand(StoreCommand.ADD,msgid,flags,useUid);
+			this.addJob(job);
+		}
+		
 		public function addFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
 			var job:StoreCommand = new StoreCommand(StoreCommand.ADD,msgid,flags,useUid);
 			this.addJob(job);
@@ -245,6 +268,11 @@ package com.coltware.airxmail.imap
 		
 		public function removeFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
 			var job:StoreCommand = new StoreCommand(StoreCommand.REMOVE,msgid,flags,useUid);
+			this.addJob(job);
+		}
+		
+		public function expunge():void{
+			var job:ExpungeCommand = new ExpungeCommand();
 			this.addJob(job);
 		}
 		

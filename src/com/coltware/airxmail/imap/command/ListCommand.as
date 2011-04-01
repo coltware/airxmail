@@ -8,11 +8,11 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxlib.job.IBlockable;
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
 	import com.coltware.airxmail_internal;
-	import com.coltware.airxlib.job.IBlockable;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -31,12 +31,17 @@ package com.coltware.airxmail.imap.command
 		
 		private var _isBlock:Boolean = false;
 		
+		
+		
 		public static const NOINFERORS:String 	= "\Noinferiors";
 		public static const NOSELECT:String 		= "\Noselect";
 		public static const MARKED:String 			= "\Marked";
 		public static const UNMARKED:String 		= "\Unmarked";
 		public static const HAS_CHILDREN:String = "\HasChildren";
 		public static const HAS_NO_CHILDREN:String = "\HasNoChildren";
+		
+		airxmail_internal var namespaceCommand:NamespaceCommand;
+		
 		
 		public function ListCommand(basename:String = "",mailbox:String = "*")
 		{

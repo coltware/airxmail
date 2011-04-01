@@ -8,9 +8,9 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -34,6 +34,10 @@ package com.coltware.airxmail.imap.command
 			myspace = new Array();
 			otherspace = new Array();
 			publicspace = new Array();
+		}
+		
+		public function getMyspaceFolders():Array{
+			return this.myspace;
 		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
