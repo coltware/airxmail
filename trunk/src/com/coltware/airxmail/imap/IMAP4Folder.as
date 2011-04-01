@@ -43,6 +43,10 @@ package com.coltware.airxmail.imap
 			this._attrs = attrs;
 		}
 		
+		public function get delim():String{
+			return this._delim;
+		}
+		
 		public function get name():String{
 			return _name;
 		}

@@ -124,6 +124,44 @@ package com.coltware.airxmail
 				return false;
 			}
 		}
+		
+		public function isTextPlain():Boolean{
+			if(_mainType == "text" && _subType == "plain"){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		
+		public function isTextHtml():Boolean{
+			if(_mainType == "text" && _subType == "html"){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		
+		public function isMultipartMixed():Boolean{
+			if(_mainType == "multipart" && _subType == "mixed"){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		
+		public function isMultipartAlternative():Boolean{
+			if(_mainType == "multipart" && _subType == "alternative"){
+				return true;
+			}
+			else{
+				return false;
+			}
+		}
+		
+		
 		/**
 		 *  return content-type string value
 		 * 
@@ -145,6 +183,10 @@ package com.coltware.airxmail
 				ret += ";" + p.join(";");
 			}
 			return ret;
+		}
+		
+		override public function toString():String{
+			return this.getValue();
 		}
 		
 		/**

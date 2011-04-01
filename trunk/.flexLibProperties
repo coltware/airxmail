@@ -68,6 +68,7 @@
     <classEntry path="com.coltware.airxmail.IListEvent"/>
     <classEntry path="com.coltware.airxmail.MailFolder.IMAP4MailFolder"/>
     <classEntry path="com.coltware.airxmail.imap.command.StatusCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.ExpungeCommand"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>

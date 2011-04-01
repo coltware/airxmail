@@ -40,6 +40,10 @@ package com.coltware.airxmail.imap
 		{
 		}
 		
+		public static function and(...args):String{
+			return args.join(" ");
+		}
+		
 		public static function dateSentBefore(date:Object):String{
 			return DATE_SENT_BEFORE + " " + toDateString(date);
 		}
