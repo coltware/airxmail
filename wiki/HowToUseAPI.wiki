@@ -1,3 +1,7 @@
+Please see my blog..
+
+http://flex.coltware.com/as3-flex-air/airxmail/
+
 = Sender API =
 == SMTP Level API ==
 *Basic Usage Part1*
