@@ -8,12 +8,13 @@
  */
 package com.coltware.airxmail
 {
-	import com.coltware.airxmail_internal;
 	import com.coltware.airxlib.utils.DateUtils;
 	import com.coltware.airxlib.utils.StringLineReader;
+	import com.coltware.airxmail_internal;
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
+	import flash.utils.IDataInput;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
@@ -64,6 +65,25 @@ package com.coltware.airxmail
 		{
 			super(target);
 			_headers = new Array();
+		}
+		
+		/**
+		 *  parse from stream like FileStream ... etc...
+		 */
+		public function parseStream(stream:IDataInput, messageId:String = null):MimeMessage{
+			var _reader:StringLineReader = new StringLineReader();
+			_reader.source = stream;
+			
+			var line:String;
+			this.parseStart(messageId);
+			while(line = _reader.next()){
+				var _tmp:String = StringUtil.trim(line);
+				if(_tmp != "."){
+					this.parseLine(line,_reader);
+				}
+			}
+			var msg:MimeMessage = this.parseEnd() as MimeMessage;
+			return msg;
 		}
 		
 		/**

@@ -18,7 +18,7 @@ package com.coltware.airxmail.imap
 		public static const IMAP4_MESSAGE:String = "imap4Message";
 		
 		public var octets:int = 0;
-		public var source:ByteArray;
+		private var _source:ByteArray;
 		
 		public function IMAP4MessageEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
@@ -29,6 +29,14 @@ package com.coltware.airxmail.imap
 		{
 			var msg:MimeMessage = _result as MimeMessage;
 			return msg;
+		}
+		
+		public function get source():ByteArray{
+			return _source;
+		}
+		
+		public function set source(src:ByteArray):void{
+			this._source = src;
 		}
 	}
 }

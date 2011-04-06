@@ -46,7 +46,7 @@ package com.coltware.airxmail.imap.command
 			}
 			var event:IMAP4MessageEvent = new IMAP4MessageEvent(IMAP4MessageEvent.IMAP4_MESSAGE);
 			event.result = parser.parseEnd();
-			event.source = reader.source as ByteArray;
+			event.source = newReader.source as ByteArray;
 			event.octets = size;
 			client.dispatchEvent(event);
 			
