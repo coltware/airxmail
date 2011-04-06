@@ -8,8 +8,14 @@
  */
 package com.coltware.airxmail
 {
+	import flash.utils.ByteArray;
+
 	public interface IMessageEvent
 	{
 		function getMimeMessage():MimeMessage;
+		/**
+		 *  mail source bytearray
+		 */
+		function get source():ByteArray;
 	}
 }

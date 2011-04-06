@@ -18,7 +18,7 @@ package com.coltware.airxmail.pop3
 		public static const POP3_MESSAGE:String = "pop3Message";
 		
 		public var octets:int = 0;
-		public var source:ByteArray;
+		private var _source:ByteArray;
 		
 		public function POP3MessageEvent(type:String)
 		{
@@ -30,5 +30,12 @@ package com.coltware.airxmail.pop3
 			return msg;
 		}
 		
+		public function get source():ByteArray{
+			return this._source;
+		}
+		
+		public function set source(src:ByteArray):void{
+			this._source = src;
+		}
 	}
 }
