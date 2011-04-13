@@ -1,4 +1,3 @@
 =Welcome=
 
-[welcome_ja documentin japanese]
-
+[Welcome_ja document in japanese]
