@@ -5,9 +5,9 @@ airxmailはAdobe AIR上で動作することを目的としたメールプロト
 
 *送信用プロトコル
 
- #SMTP
+ # SMTP
 
 *受信用プロトコル
 
- #POP3
- #IMAP
+ # POP3
+ # IMAP
