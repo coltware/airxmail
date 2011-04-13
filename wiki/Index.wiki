@@ -1,0 +1,4 @@
+=Welcome=
+
+[welcome_ja documentin japanese]
+
