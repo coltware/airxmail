@@ -32,6 +32,10 @@ package com.coltware.airxmail.imap
 		 */
 		public static const IMAP4_FOLDER_RESULT:String = "imap4FolderResult";
 		
+		public static const IMAP4_MESSAGE_COPY_OK:String = "imap4MessageCopyOk";
+		
+		public static const IMAP4_MESSAGE_APPEND_OK:String = "imap4MessageAppendOk";
+		
 		public var client:IMAP4Client;
 		
 		protected var _result:Object;

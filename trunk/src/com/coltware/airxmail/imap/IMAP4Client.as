@@ -12,11 +12,14 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.MailFolder.IMAP4MailFolder;
 	import com.coltware.airxmail.MailParser;
+	import com.coltware.airxmail.MimeMessage;
 	import com.coltware.airxmail.TextSocketReader;
 	import com.coltware.airxmail.TextSocketReaderEvent;
 	import com.coltware.airxmail.imap.chain.ISearch;
 	import com.coltware.airxmail.imap.chain.ISelect;
+	import com.coltware.airxmail.imap.command.AppendCommand;
 	import com.coltware.airxmail.imap.command.CapabilityCommand;
+	import com.coltware.airxmail.imap.command.CopyCommand;
 	import com.coltware.airxmail.imap.command.CreateCommand;
 	import com.coltware.airxmail.imap.command.DeleteCommand;
 	import com.coltware.airxmail.imap.command.ExamineCommand;
@@ -43,6 +46,7 @@ package com.coltware.airxmail.imap
 	import flash.events.ProgressEvent;
 	import flash.utils.ByteArray;
 	import flash.utils.IDataInput;
+	import flash.utils.IDataOutput;
 	import flash.utils.setTimeout;
 	
 	import mx.logging.ILogger;
@@ -73,6 +77,10 @@ package com.coltware.airxmail.imap
 	 *  @eventType com.coltware.airxmail.imap.IMAP4MessageEvent.IMAP4_MESSAGE
 	 */
 	[Event(name="imap4Message",type="com.coltware.airxmail.imap.IMAP4MessageEvent")]
+	
+	[Event(name="imap4MessageCopyOk",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
+	[Event(name="imap4MessageAppendOk",type="com.coltware.airxmail.imap.IMAP4Event")]
 	
 	
 	
@@ -110,6 +118,8 @@ package com.coltware.airxmail.imap
 		private var _auth:Boolean = false;
 		
 		private var _namespaceCmd:NamespaceCommand;
+		
+		protected var _bufferSize:uint = 16384;
 		
 		public function IMAP4Client(target:IEventDispatcher=null)
 		{
@@ -261,18 +271,40 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		/**
+		 *  IMAP STORE ( Add Flag ) Command
+		 */
 		public function addFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
 			var job:StoreCommand = new StoreCommand(StoreCommand.ADD,msgid,flags,useUid);
 			this.addJob(job);
 		}
 		
+		/**
+		 *  IMAP STORE (Remove Flag) Command
+		 */
 		public function removeFlags(msgid:String,flags:Array,useUid:Boolean = true):void{
 			var job:StoreCommand = new StoreCommand(StoreCommand.REMOVE,msgid,flags,useUid);
 			this.addJob(job);
 		}
 		
+		/**
+		 *  IMAP EXPUNGE Command
+		 */
 		public function expunge():void{
 			var job:ExpungeCommand = new ExpungeCommand();
+			this.addJob(job);
+		}
+		
+		/**
+		 *  IMAP COPY Command
+		 */
+		public function copy(msgid:String,mailbox:Object,useUid:Boolean = true):void{
+			var job:CopyCommand = new CopyCommand(msgid,mailbox,useUid);
+			this.addJob(job);
+		}
+		
+		public function append(message:MimeMessage,mailbox:Object,flags:Array = null):void{
+			var job:AppendCommand = new AppendCommand(message,mailbox,flags);
 			this.addJob(job);
 		}
 		
@@ -387,13 +419,13 @@ package com.coltware.airxmail.imap
 											this._auth = true;
 										}
 									}
+									
 									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
 									eventOk.$command = job;
 									eventOk.$message = StringUtil.trim(line.substr(line.indexOf("OK") + "OK".length));
 									
 									this.dispatchEvent(eventOk);
 									_socketReader.clear();
-									
 									this.commitJob();
 								}
 								else if(status == "NO"){
@@ -421,6 +453,28 @@ package com.coltware.airxmail.imap
 									
 									this.dispatchEvent(eventBad);
 									_socketReader.clear();
+								}
+							}
+						}
+						else{
+							// no tag
+							if(job is AppendCommand){
+								var appendCmd:AppendCommand = job as AppendCommand;
+								var dataBytes:ByteArray = appendCmd.getDataByteArray();
+								var dataStr:String;
+								while(dataBytes.bytesAvailable){
+									if(dataBytes.bytesAvailable > this._bufferSize){
+										dataStr = dataBytes.readUTFBytes(this._bufferSize);
+										this._sock.writeUTFBytes(dataStr);
+										this._sock.flush();
+									}
+									else{
+										dataStr = dataBytes.readUTFBytes(dataBytes.bytesAvailable);
+										this._sock.writeUTFBytes(dataStr);
+										this._sock.flush();
+										this._sock.writeUTFBytes("\r\n");
+										this._sock.flush();
+									}
 								}
 							}
 						}
@@ -468,5 +522,7 @@ package com.coltware.airxmail.imap
 			this._sock.flush();
 			this._isIdleDone = true;
 		}
+		
+		
 	}
 }

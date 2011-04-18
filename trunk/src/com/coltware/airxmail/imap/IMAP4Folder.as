@@ -36,10 +36,13 @@ package com.coltware.airxmail.imap
 		airxmail_internal var $numRecent:int;
 		airxmail_internal var $uidvalidity:String;
 		
-		public function IMAP4Folder(name:String,delim:String,attrs:Array)
+		public function IMAP4Folder(name:String = "",delim:String = "/" ,attrs:Array = null)
 		{
 			this._name = name;
 			this._delim = delim;
+			if(attrs == null){
+				attrs = new Array();
+			}
 			this._attrs = attrs;
 		}
 		
