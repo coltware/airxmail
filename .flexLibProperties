@@ -69,6 +69,8 @@
     <classEntry path="com.coltware.airxmail.MailFolder.IMAP4MailFolder"/>
     <classEntry path="com.coltware.airxmail.imap.command.StatusCommand"/>
     <classEntry path="com.coltware.airxmail.imap.command.ExpungeCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.CopyCommand"/>
+    <classEntry path="com.coltware.airxmail.imap.command.AppendCommand"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
