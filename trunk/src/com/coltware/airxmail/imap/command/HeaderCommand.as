@@ -12,7 +12,7 @@ package com.coltware.airxmail.imap.command
 	{
 		public function HeaderCommand(msgid:String, useUid:Boolean=true)
 		{
-			super(msgid, useUid,"RFC822.HEADER");
+			super(msgid, useUid,"(FLAGS RFC822.HEADER)");
 		}
 	}
 }
