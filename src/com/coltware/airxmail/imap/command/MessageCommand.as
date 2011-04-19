@@ -11,14 +11,26 @@ package com.coltware.airxmail.imap.command
 	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.MailParser;
 	import com.coltware.airxmail.imap.IMAP4MessageEvent;
+	import com.coltware.airxmail_internal;
 	
 	import flash.utils.ByteArray;
+	
+	import mx.logging.ILogger;
+	import mx.logging.Log;
+	import mx.utils.StringUtil;
 
+	use namespace airxmail_internal;
+	
 	public class MessageCommand extends IMAP4Command
 	{
-		private var _msgid:String;
+		public static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.command.MessageCommand");
 		
-		public function MessageCommand(msgid:String,useUid:Boolean = true, option:String = "RFC822")
+		private var _msgid:String;
+		private var _flags:Array;
+		
+		
+		
+		public function MessageCommand(msgid:String,useUid:Boolean = true, option:String = "(FLAGS RFC822)")
 		{
 			super();
 			if(useUid){
@@ -33,6 +45,22 @@ package com.coltware.airxmail.imap.command
 		
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String = reader.next();
+			
+			if(line.indexOf("FLAGS")){
+				// parse flags
+				var fpos:int = line.indexOf("FLAGS");
+				if(fpos){
+					var sp:int = line.indexOf("(",fpos);
+					var ep:int = line.indexOf(")",sp);
+					var flag_line:String = line.substring(sp + 1,ep);
+					if(flag_line){
+						flag_line = StringUtil.trim(flag_line);
+						_flags = flag_line.split(/\s+/);
+						
+					}
+				}
+			}
+			
 			var pos1:int = line.indexOf("{");
 			var pos2:int = line.indexOf("}");
 			var sizeStr:String = line.substr(pos1 + 1,pos2-pos1 -1);
@@ -45,6 +73,7 @@ package com.coltware.airxmail.imap.command
 				parser.parseLine(line,newReader);
 			}
 			var event:IMAP4MessageEvent = new IMAP4MessageEvent(IMAP4MessageEvent.IMAP4_MESSAGE);
+			event.$flags = this._flags;
 			event.result = parser.parseEnd();
 			event.source = newReader.source as ByteArray;
 			event.octets = size;
