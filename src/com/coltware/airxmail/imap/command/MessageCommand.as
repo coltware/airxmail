@@ -49,7 +49,7 @@ package com.coltware.airxmail.imap.command
 			if(line.indexOf("FLAGS")){
 				// parse flags
 				var fpos:int = line.indexOf("FLAGS");
-				if(fpos){
+				if(fpos > 0){
 					var sp:int = line.indexOf("(",fpos);
 					var ep:int = line.indexOf(")",sp);
 					var flag_line:String = line.substring(sp + 1,ep);
@@ -59,6 +59,10 @@ package com.coltware.airxmail.imap.command
 						
 					}
 				}
+			}
+			if(_flags == null){
+				// create empty array
+				_flags = new Array();
 			}
 			
 			var pos1:int = line.indexOf("{");

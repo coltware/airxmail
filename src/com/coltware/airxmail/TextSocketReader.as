@@ -19,8 +19,6 @@ package com.coltware.airxmail
 	import mx.logging.ILogger;
 	import mx.logging.Log;
 	
-	import spark.primitives.Line;
-	
 	use namespace airxmail_internal;
 	
 	/**
