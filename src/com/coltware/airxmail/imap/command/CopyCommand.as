@@ -15,7 +15,6 @@ package com.coltware.airxmail.imap.command
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
-	import mx.states.OverrideBase;
 	
 	use namespace airxmail_internal;
 
