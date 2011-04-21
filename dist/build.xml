@@ -35,16 +35,25 @@
 	<!--  addocの出力フォルダ -->
 	<property name="ASDOC_DIR" value="${basedir}/dist/asdoc" />
 	<!-- ASDOCの為のソースのディレクトリ -->
-	<property name="SRC_PATH" value="${basedir}/src ${basedir}/../commons/src/" />
+	<property name="SRC_PATH" value="${basedir}/src" />
 	
+	<property name="EXT_LIB" value="${basedir}/libs" />
+	<property name="asdoc_title" value="'airxmail API Documentaion'" />
+	<property name="asdoc_footer" value="'Copyright(C) 2011 coltware.com. All Rights Reserved.	'" />
 	<!--
 	*********************************************************************
 	ここからターゲット処理
 	*********************************************************************
 	-->
 	<target name="asdoc">
-		<exec executable="${FLEX_BIN}/asdoc.exe">
-			<arg line="-source-path ${SRC_PATH} -doc-sources ${SRC_PATH} -output ${ASDOC_DIR} ${load-config}"/>
+		<condition property="asdoc_bin" value="asdoc.exe">
+				    <os family="windows" />
+		</condition>
+		<condition property="asdoc_bin" value="asdoc">
+					<os family="unix" />
+		</condition>
+		<exec executable="${FLEX_BIN}/${asdoc_bin}">
+			<arg line="-window-title ${asdoc_title} -main-title ${asdoc_title} -footer ${asdoc_footer} -source-path ${SRC_PATH} -doc-sources ${SRC_PATH} -output ${ASDOC_DIR}  -compiler.external-library-path=${EXT_LIB} -target-player=10.0.0 -compiler.strict=false ${load-config}"/>
 			<env key="JAVA_HOME" value="${java.home}"/>
 		</exec>
 	</target>

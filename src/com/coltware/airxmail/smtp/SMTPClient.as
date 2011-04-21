@@ -294,8 +294,9 @@ package com.coltware.airxmail.smtp
 			this.addJob(cmd);
 		}
 		/**
-		 *  データを送信する
-		 *  最後の<CR><LF>.<CR><LF>はなくてよい
+		 *  SMTP Data command
+		 * 
+		 * Don't need [CR][LF].[CR][LF] at end of message
 		 */
 		public function data(data:String):void{
 			var cmd:Object = new Object();

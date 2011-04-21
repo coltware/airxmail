@@ -62,7 +62,7 @@ package com.coltware.airxmail.imap.command
 		/**
 		 * 
 		 *  ex )   [COPYUID 623752185 255 2] (Success)]
-		 *           [COPYUID 38505 304,319:320 3956:3958] Done    <--  Doesn't  support because of message id is rang ( 319:320 ) 
+		 *           [COPYUID 38505 304,319:320 3956:3958] Done    &gt;--  Doesn't  support because of message id is rang ( 319:320 ) 
 		 *         
 		 */
 		override protected function parseResult(reader:StringLineReader):void{
