@@ -33,7 +33,7 @@ package com.coltware.airxmail
 		 *  ex)
 		 *  AirxMailConfig.setDefaultBodyCharset("ISO-2022-JP");
 		 *  
-		 *  "text/plain" -> "text/plain; charset=ISO-2022-JP" 
+		 *  "text/plain" -&lt; "text/plain; charset=ISO-2022-JP" 
 		 */
 		public static function setDefaultBodyCharset(str:String):void{
 			if(str != null){

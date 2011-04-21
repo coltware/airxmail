@@ -17,11 +17,11 @@ package com.coltware.airxmail.imap.utils
 	/**
 	 *  以下のような変換を行う
 	 * 
-	 *   [&MLcw5zDDMNQw8zCw-]=>[ショッピング]
-	 *   [&MNcw6TCkMNkw,DDI-]=>[プライベート]
-	 *   [[Gmail]/&kAFP4W4IMH8w4TD8MOs-]=>[[Gmail]/送信済みメール]
-	 *   [[Gmail]/&j,dg0TDhMPww6w-]=>[[Gmail]/迷惑メール]
-	 * 
+	 *   [&amp;MLcw5zDDMNQw8zCw-]=>[ショッピング]
+	 *   [&amp;MNcw6TCkMNkw,DDI-]=>[プライベート]
+	 *   [[Gmail]/&amp;kAFP4W4IMH8w4TD8MOs-]=>[[Gmail]/送信済みメール]
+	 *   [[Gmail]/&amp;j,dg0TDhMPww6w-]=>[[Gmail]/迷惑メール]
+	 *  
 	 */
 	public class IMAPUTF7Encoder
 	{

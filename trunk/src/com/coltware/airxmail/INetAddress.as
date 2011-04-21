@@ -23,8 +23,7 @@ package com.coltware.airxmail
 		private var _personal:String = null;
 		
 		/**
-		 *  E-Mail( XXXXXX &lt;xxxx@yyyy.zz&gt; ) Address class
-		 *  
+		 *  E-Mail Address class
 		 */
 		public function INetAddress(addr:String = null,personal:String = null)
 		{
