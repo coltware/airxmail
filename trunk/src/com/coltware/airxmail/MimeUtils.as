@@ -56,7 +56,7 @@ package com.coltware.airxmail
 								decorder.decode(title);
 								var bytes:ByteArray = decorder.toByteArray();
 								bytes.position = 0;
-								ret += bytes.readMultiByte(bytes.bytesAvailable,charset);
+								ret += AirxMailConfig.getDecodeCharsetFunction(charset)(bytes,charset);
 							}
 							else if(tranType == "q"){
 								ret += decode_q(title,charset);

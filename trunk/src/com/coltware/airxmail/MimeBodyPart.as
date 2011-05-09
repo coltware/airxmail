@@ -10,9 +10,9 @@ package com.coltware.airxmail
 {
 	import __AS3__.vec.Vector;
 	
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.EventDispatcher;
 	import flash.utils.*;
@@ -116,7 +116,7 @@ package com.coltware.airxmail
 				if(charset){
 					buf.position = 0;
 					charset = charset.toLowerCase();
-					var body:String =  buf.readMultiByte(buf.bytesAvailable,charset);
+					var body:String = AirxMailConfig.getDecodeCharsetFunction(charset)(buf,charset);
 					return body;
 				}
 				else{
