@@ -28,6 +28,7 @@ package com.coltware.airxmail.imap.command
 		private var _msgid:String;
 		private var _flags:Array;
 		
+		protected var kind:String;
 		
 		
 		public function MessageCommand(msgid:String,useUid:Boolean = true, option:String = "(FLAGS RFC822)")
@@ -41,6 +42,7 @@ package com.coltware.airxmail.imap.command
 			}
 			_msgid = msgid;
 			this.value = _msgid + " " + option;
+			this.kind = IMAP4MessageEvent.IMAP4_MESSAGE_KIND_ALL;
 		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
@@ -78,6 +80,8 @@ package com.coltware.airxmail.imap.command
 			}
 			var event:IMAP4MessageEvent = new IMAP4MessageEvent(IMAP4MessageEvent.IMAP4_MESSAGE);
 			event.$flags = this._flags;
+			event.$kind  = this.kind;
+			event.client = client;
 			event.result = parser.parseEnd();
 			event.source = newReader.source as ByteArray;
 			event.octets = size;

@@ -20,8 +20,14 @@ package com.coltware.airxmail.imap
 	{
 		public static const IMAP4_MESSAGE:String = "imap4Message";
 		
+		public static const IMAP4_MESSAGE_KIND_ALL:String = "all";
+		public static const IMAP4_MESSAGE_KIND_HEADER:String = "header";
+		
+		
 		public var octets:int = 0;
 		private var _source:ByteArray;
+		
+		airxmail_internal var $kind:String;
 		
 		airxmail_internal var $flags:Array;
 		
@@ -46,6 +52,10 @@ package com.coltware.airxmail.imap
 		
 		public function set source(src:ByteArray):void{
 			this._source = src;
+		}
+		
+		public function get kind():String{
+			return $kind;
 		}
 	}
 }

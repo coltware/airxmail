@@ -480,6 +480,12 @@ package com.coltware.airxmail.pop3
 								}
 								bodyEvent.octets = this._sizeMap[job.value];
 								bodyEvent.source = job.source;
+								if(cmd == DO_RETR){
+									bodyEvent.$kind = POP3MessageEvent.POP3_MESSAGE_KIND_ALL;
+								}
+								else if(cmd == DO_TOP){
+									bodyEvent.$kind = POP3MessageEvent.POP3_MESSAGE_KIND_HEADER;
+								}
 								this.dispatchEvent(bodyEvent);
 								this.commitJob();
 							}

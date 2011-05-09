@@ -17,5 +17,10 @@ package com.coltware.airxmail
 		 *  mail source bytearray
 		 */
 		function get source():ByteArray;
+		
+		/**
+		 *  message kind
+		 */
+		function get kind():String;
 	}
 }
