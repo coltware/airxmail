@@ -13,6 +13,8 @@ package com.coltware.airxmail
 	import com.coltware.airxmail_internal;
 	
 	import flash.system.Capabilities;
+	import flash.utils.ByteArray;
+	import flash.utils.Dictionary;
 
 	use namespace airxmail_internal;
 	
@@ -25,7 +27,9 @@ package com.coltware.airxmail
 		//  default body charset
 		private static var _default_body_charset:String = null;
 		//  default header(subject,to,ftom etc...) charset
-		private static var _default_header_charset:String = null
+		private static var _default_header_charset:String = null;
+		
+		private static var _decodeDict:Dictionary = new Dictionary();
 		
 		/**
 		 *  set default charset for body
@@ -45,6 +49,23 @@ package com.coltware.airxmail
 			if(str != null){
 				_default_header_charset = str.toUpperCase();
 			}
+		}
+		
+		public static function setDecodeCharetFunction(func:Function,charset:String):void{
+			_decodeDict[charset] = func;
+		}
+		
+		public static function getDecodeCharsetFunction(charset:String):Function{
+			if(_decodeDict[charset]){
+				return _decodeDict[charset] as Function;
+			}
+			else{
+				return _readMultiByte;
+			}
+		}
+		
+		private static function _readMultiByte(bytes:ByteArray,charset:String):String{
+			return bytes.readMultiByte(bytes.bytesAvailable,charset);
 		}
 		
 		airxmail_internal static function get DEFAULT_BODY_CHARSET():String{
