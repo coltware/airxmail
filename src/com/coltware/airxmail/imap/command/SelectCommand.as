@@ -8,12 +8,12 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxlib.job.IBlockable;
+	import com.coltware.airxlib.utils.StringLineReader;
 	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
 	import com.coltware.airxmail.imap.chain.ISearch;
 	import com.coltware.airxmail_internal;
-	import com.coltware.airxlib.job.IBlockable;
-	import com.coltware.airxlib.utils.StringLineReader;
 	
 	import flash.events.Event;
 	
@@ -41,6 +41,8 @@ package com.coltware.airxmail.imap.command
 				this.value = '"' +  (folder_StringOrIMAP4Folder as IMAP4Folder).name + '"';
 			}
 			else{
+				_folder = new IMAP4Folder();
+				_folder.nameUTF8 = folder_StringOrIMAP4Folder as String;
 				this.value = '"' + ( folder_StringOrIMAP4Folder as String) + '"';
 			}
 		}
@@ -77,8 +79,14 @@ package com.coltware.airxmail.imap.command
 				_folder.$uidvalidity = this._uidvalidity;
 				_folder.$numRecent = this._recent;
 			}
-			var event:Event = new Event(Event.COMPLETE);
+			var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
+			event.$command = this;
+			event.result = _folder;
 			this.dispatchEvent(event);
+			
+			var endEvt:Event = new Event(Event.COMPLETE);
+			this.dispatchEvent(endEvt);
+			
 		}
 		
 		private function _parse_exists(line:String):Boolean{
@@ -87,6 +95,7 @@ package com.coltware.airxmail.imap.command
 				var numStr:String = line.substr(0,pos2);
 				numStr = StringUtil.trim(numStr);
 				_exists = parseInt(numStr);
+				log.debug("exists .." + _exists);
 				return true;
 			}
 			return false;

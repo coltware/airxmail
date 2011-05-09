@@ -82,9 +82,16 @@ package com.coltware.airxmail.imap.command
 					}
 				}
 			}
+			
+			for(var i:int = 0; i < this._folders.length; i++){
+				var _folder:IMAP4Folder = _folders[i];
+				var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
+				event.client = this.client;
+				event.$command = this;
+				event.result = _folder;
+				client.dispatchEvent(event);
+			}
 		}
-		
-		
 		
 		private function _parse_list_line(line:String):void{
 			var pos1:int = line.indexOf("(");
@@ -99,15 +106,7 @@ package com.coltware.airxmail.imap.command
 				if(ret){
 					var ret2:Array = this._parse_quato_value(ret[1]);
 					var folder:IMAP4Folder = new IMAP4Folder(ret2[0],ret[0],attrs);
-					
-					var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
-					event.client = this.client;
-					event.$command = this;
-					event.result = folder;
-					
 					_folders.push(folder);
-					
-					client.dispatchEvent(event);
 				}
 			}
 		}

@@ -70,6 +70,7 @@ package com.coltware.airxmail.imap.command
 							event = new IMAP4ListEvent(IMAP4ListEvent.IMAP4_RESULT_LIST);
 						}
 						event.result = list;
+						event.client = client;
 						client.dispatchEvent(event);
 					}
 				}

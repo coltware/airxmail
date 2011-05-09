@@ -8,13 +8,18 @@
  */
 package com.coltware.airxmail.imap.command
 {
+	import com.coltware.airxlib.job.IBlockable;
 	import com.coltware.airxlib.utils.StringLineReader;
+	import com.coltware.airxmail.imap.IMAP4Event;
 	import com.coltware.airxmail.imap.IMAP4Folder;
+	import com.coltware.airxmail_internal;
 	
 	import mx.logging.ILogger;
 	import mx.logging.Log;
+	
+	use namespace airxmail_internal;
 
-	public class StatusCommand extends IMAP4Command
+	public class StatusCommand extends IMAP4Command implements IBlockable
 	{
 		private static const log:ILogger = Log.getLogger("com.coltware.airxmail.imap.command.StatusCommand");
 		
@@ -39,9 +44,15 @@ package com.coltware.airxmail.imap.command
 			}
 			else{
 				this.value = folder_StringOrIMAP4Folder as String;
+				_folder = new IMAP4Folder();
+				_folder.nameUTF8 = this.value;
 			}
 			this._name = this.value;
 			this.value += " (MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)";
+		}
+		
+		public function isBlock():Boolean{
+			return true;
 		}
 		
 		override protected function parseResult(reader:StringLineReader):void{
@@ -76,23 +87,32 @@ package com.coltware.airxmail.imap.command
 					}
 				}
 			}
-			var folder:IMAP4Folder;
 			if(this._folder){
-				folder = this._folder;
+				this._folder.$numExists = this._messagesNum;
+				this._folder.$numRecent = this._recentNum;
+				this._folder.$uidnext   = this._uidnext;
+				this._folder.$uidvalidity = this._uidvalidity;
 				
+				
+				var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_STATUS);
+				event.$command = this;
+				event.client = this.client;
+				event.result = this._folder;
+				client.dispatchEvent(event);
 			}
 			else{
-				
+				// error
+				log.warn("no folder ???");
 			}
-			this.debugDump();
 		}
 		
 		private function debugDump():void{
-			log.debug("messages: " + this._messagesNum);
-			log.debug("recent     : " + this._recentNum);
-			log.debug("unseen   : " + this._unseenNum);
-			log.debug("uidnext  : " + this._uidnext);
-			log.debug("uidvalidity : " + this._uidvalidity);
+			log.debug("======== " + this._folder.nameUTF8 + " ============");
+			log.debug("messages    : [" + this._messagesNum + "]");
+			log.debug("recent      : [" + this._recentNum   + "]");
+			log.debug("unseen      : [" + this._unseenNum   + "]");
+			log.debug("uidnext     : [" + this._uidnext     + "]");
+			log.debug("uidvalidity : [" + this._uidvalidity + "]");
 		}
 	}
 }
