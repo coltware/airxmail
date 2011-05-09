@@ -137,9 +137,11 @@ package com.coltware.airxmail
 		public function get bodyByteArray():ByteArray{
 			var header:MimeHeader = this.getHeader("Content-Transfer-Encoding");
 			if(header){
-				
 				var enc:String = header.value;
 				enc = enc.toLowerCase();
+				
+				log.debug("bodyByteArray -> " + enc);
+				
 				if(enc == "base64"){
 					var base64dec:Base64Decoder = new Base64Decoder();
 					$bodySource.position = 0;
@@ -159,6 +161,7 @@ package com.coltware.airxmail
 					}
 				}
 				else if(enc == "quoted-printable"){
+					
 					var ba:ByteArray = new ByteArray();
 					$bodySource.position = 0;
 					while($bodySource.bytesAvailable){
@@ -167,9 +170,6 @@ package com.coltware.airxmail
 							var ch2:String = $bodySource.readUTFBytes(2);
 							if(StringUtil.trim(ch2).length == 2){
 								ba.writeByte(parseInt(ch2,16));
-							}
-							else{
-								ba.writeUTFBytes(ch2);
 							}
 						}
 						else{
@@ -183,6 +183,7 @@ package com.coltware.airxmail
 					
 			}
 			else{
+				log.debug("can't find 'Content-Transfer-Encoding' header");
 				return $bodySource;
 			}
 		}
