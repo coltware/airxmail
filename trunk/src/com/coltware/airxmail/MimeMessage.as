@@ -8,8 +8,8 @@
  */
 package com.coltware.airxmail
 {
-	import com.coltware.airxmail_internal;
 	import com.coltware.airxlib.utils.DateUtils;
+	import com.coltware.airxmail_internal;
 	
 	import flash.utils.*;
 	
@@ -354,6 +354,7 @@ package com.coltware.airxmail
 				var max:int = children.length -1;
 				//  後ろから見ていく
 				for(var i:int=max; i > -1; i--){
+					
 					var child:MimeBodyPart = children[i];
 					ct = child.contentType;
 					if(ct.isText()){
@@ -361,7 +362,13 @@ package com.coltware.airxmail
 							return child.bodyText;
 						}
 						else{
+							log.debug("type is " + ct.getSubType());
 							_target = child;
+						}
+					}
+					else{
+						if(child is MimeMultiPart){
+							_target = _get_bodyTextOrMultiPart(MimeMultiPart(child));
 						}
 					}
 				}
@@ -370,6 +377,25 @@ package com.coltware.airxmail
 				}	
 			}
 			return super.bodyText;
+		}
+		
+		
+		private function _get_bodyTextOrMultiPart(mpart:MimeMultiPart):MimeBodyPart{
+			var children:Array = mpart.partChildren;
+			for(var i:int = 0; children.length; i++){
+				var child:MimeBodyPart = children[i];
+				if(child is MimeMultiPart){
+					var mmpart:MimeMultiPart = child as MimeMultiPart;
+					var part:MimeBodyPart = this._get_bodyTextOrMultiPart(mmpart);
+					if(part.contentType.isTextPlain()){
+						return part;
+					}
+				}
+				else if(child.contentType.isTextPlain()){
+					return child;
+				}
+			}
+			return null;
 		}
 		
 		/**
