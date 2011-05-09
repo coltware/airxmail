@@ -26,11 +26,18 @@ package com.coltware.airxmail.imap
 		public static const IMAP4_AUTH_OK:String = "imap4AuthOk";
 		public static const IMAP4_AUTH_NG:String = "imap4AuthNg";
 		
+		public static const IMAP4_NOOP:String = "imap4Noop";
+		
 		public static const IMAP4_NAMESPACE_FOLDER:String = "imap4NamespaceFolder";
 		/**
-		 *  LIST command
+		 *  LIST(LSUB) command
 		 */
 		public static const IMAP4_FOLDER_RESULT:String = "imap4FolderResult";
+		
+		/**
+		 *  STATUS command
+		 */
+		public static const IMAP4_FOLDER_STATUS:String = "imap4FolderStatus";
 		
 		public static const IMAP4_MESSAGE_COPY_OK:String = "imap4MessageCopyOk";
 		

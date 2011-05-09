@@ -58,6 +58,12 @@ package com.coltware.airxmail.imap
 	[Event(name="ioError",type="flash.events.IOErrorEvent")]
 	[Event (name="securityError",type="flash.events.SecurityErrorEvent")]
 	
+	/**
+	 *  Socket Close
+	 * 
+	 */
+	[Event(name="close",type="flash.events.Event")]
+	
 	[Event(name="jobStackEmpty",type="com.coltware.airxlib.job.JobEvent")]
 	[Event(name="jobIdleTimeout",type="com.coltware.airxlib.job.JobEvent")]
 	[Event(name="jobInitFailure",type="com.coltware.airxlib.job.JobEvent")]
@@ -72,7 +78,17 @@ package com.coltware.airxmail.imap
 	[Event(name="imap4AuthOk",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4AuthNg",type="com.coltware.airxmail.imap.IMAP4Event")]
 	
+	[Event(name="imapNoop",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
 	[Event(name="imap4FolderResult",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
+	/**
+	 *  IMAP STATUS event
+	 * 
+	 *  @eventType com.coltware.airxmail.imap.IMAP4Event.IMAP4_FOLDER_STATUS
+	 */
+	[Event(name="imap4FolderStatus",type="com.coltware.airxmail.imap.IMAP4Event")]
+	
 	/**
 	 *  @eventType com.coltware.airxmail.imap.IMAP4MessageEvent.IMAP4_MESSAGE
 	 */
@@ -149,6 +165,10 @@ package com.coltware.airxmail.imap
 			
 		}
 		
+		override protected function internalSocketClosing():void{
+			
+		}
+		
 		public function getDefaultFolder():IMAP4Folder{
 			if(_namespaceCmd){
 				var folders:Array = this._namespaceCmd.getMyspaceFolders();
@@ -181,12 +201,13 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
-		public function noop(tag:String = null):void{
+		public function noop(tag:String = null):NoopCommand{
 			var job:NoopCommand = new NoopCommand();
 			if(tag){
 				job.tag = tag;
 			}
 			this.addJob(job);
+			return job;
 		}
 		
 		public function idle():void{
@@ -522,7 +543,5 @@ package com.coltware.airxmail.imap
 			this._sock.flush();
 			this._isIdleDone = true;
 		}
-		
-		
 	}
 }

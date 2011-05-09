@@ -35,6 +35,7 @@ package com.coltware.airxmail.imap
 		airxmail_internal var $numExists:int;
 		airxmail_internal var $numRecent:int;
 		airxmail_internal var $uidvalidity:String;
+		airxmail_internal var $uidnext:String;
 		
 		public function IMAP4Folder(name:String = "",delim:String = "/" ,attrs:Array = null)
 		{
@@ -78,10 +79,28 @@ package com.coltware.airxmail.imap
 		}
 		
 		/**
+		 *  Get message size
+		 * 
 		 *   Need select command
 		 */
 		public function numExists():int{
 			return this.$numExists;
+		}
+		
+		/**
+		 *  Get recent message size
+		 * 
+		 */ 
+		public function numRecent():int{
+			return this.$numRecent;
+		}
+		
+		public function get uidnext():String{
+			return this.$uidnext;
+		}
+		
+		public function get uidvalidity():String{
+			return this.$uidvalidity;
 		}
 		
 		
