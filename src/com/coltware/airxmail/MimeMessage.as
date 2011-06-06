@@ -444,9 +444,11 @@ package com.coltware.airxmail
 			
 			
 			// From を記述する
-			line = "From: " + $fromAddress.toMimeString(this._defaultCharset);
-			if($__debug__) log.debug("SMTP - " + line);
-			output.writeUTFBytes(line + RN);
+			if($fromAddress){
+				line = "From: " + $fromAddress.toMimeString(this._defaultCharset);
+				if($__debug__) log.debug("SMTP - " + line);
+				output.writeUTFBytes(line + RN);
+			}
 			// To を記述する
 			for(i=0;i<$toRcpts.length; i++){
 				arr.push($toRcpts[i].toMimeString(this._defaultCharset));
