@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="false" version="1">
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="1">
   <includeClasses>
     <classEntry path="com.coltware.airxmail.AirxMailConfig"/>
     <classEntry path="com.coltware.airxmail.ContentType"/>
@@ -71,6 +71,9 @@
     <classEntry path="com.coltware.airxmail.imap.command.ExpungeCommand"/>
     <classEntry path="com.coltware.airxmail.imap.command.CopyCommand"/>
     <classEntry path="com.coltware.airxmail.imap.command.AppendCommand"/>
+    <classEntry path="com.coltware.airxmail.MailParserEvent"/>
+    <classEntry path="com.coltware.airxmail.imap.IMAP4FetchEvent"/>
+    <classEntry path="com.coltware.airxmail.imap.command.SubscribeCommand"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests/>
