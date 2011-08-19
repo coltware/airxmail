@@ -32,6 +32,9 @@ package com.coltware.airxmail.imap.utils
 				if(ch == "&"){
 					plain = false;
 				}
+				else if(ch == "-"){
+					plain = true;
+				}
 				else{
 					if(plain){
 						bytes.writeMultiByte(ch,"unicodeFFFE");
