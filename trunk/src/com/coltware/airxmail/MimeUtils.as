@@ -47,7 +47,11 @@ package com.coltware.airxmail
 						inEnc = false;
 						var target:String = encStr.substr(1);
 						var targets:Array = target.split("?");
-						if(targets.length == 3){
+						if(targets.length == 2){
+							inEnc = true;
+							encStr += pch;
+						}
+						else if(targets.length == 3){
 							var title:String = targets[2];
 							var charset:String = targets[0].toLowerCase();
 							var tranType:String = targets[1].toLowerCase();
@@ -61,12 +65,14 @@ package com.coltware.airxmail
 							else if(tranType == "q"){
 								ret += decode_q(title,charset);
 							}
+							encStr = "";
 						}
 						else{
 							ret += target;
+							encStr = "";
 						}
 						
-						encStr = "";
+						
 					}
 					else{
 						encStr += pch;
@@ -80,9 +86,7 @@ package com.coltware.airxmail
 						val = "";
 					}
 					else{
-						
 						val += ch;
-						
 					}
 				}			
 			}
