@@ -65,6 +65,9 @@ package com.coltware.airxmail
 		}
 		
 		private static function _readMultiByte(bytes:ByteArray,charset:String):String{
+			if(charset == "utf8"){
+				charset = "utf-8";
+			}
 			return bytes.readMultiByte(bytes.bytesAvailable,charset);
 		}
 		
