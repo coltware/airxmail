@@ -19,6 +19,7 @@ package com.coltware.airxmail.imap
 		public static const IMAP4_CONNECT_OK:String = "imap4ConnectOk";
 		public static const IMAP4_CONNECT_NG:String = "imap4ConnectNg";
 		
+		public static const IMAP4_COMMAND_INVOKED:String = "imap4CommandInvoked";
 		public static const IMAP4_COMMAND_BAD:String = "imap4CommandBad";
 		public static const IMAP4_COMMAND_NO:String = "imap4CommandNo";
 		public static const IMAP4_COMMAND_OK:String = "imap4CommandOk";
