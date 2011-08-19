@@ -82,10 +82,10 @@ package com.coltware.airxmail.imap.command
 			var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_FOLDER_RESULT);
 			event.$command = this;
 			event.result = _folder;
-			this.dispatchEvent(event);
+			client.dispatchEvent(event);
 			
 			var endEvt:Event = new Event(Event.COMPLETE);
-			this.dispatchEvent(endEvt);
+			client.dispatchEvent(endEvt);
 			
 		}
 		

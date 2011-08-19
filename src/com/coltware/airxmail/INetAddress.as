@@ -88,11 +88,11 @@ package com.coltware.airxmail
 			var addr:INetAddress = new INetAddress();
 			if(pos > -1){
 				if(pos == 0 ){
-					addr.address = str.substring(1,str.length-1);
+					addr.address = StringUtil.trim(str.substring(1,str.length-1));
 				}
 				else{
-					addr.personal = str.substr(0,pos);
-					addr.address  = str.substring(pos+1,str.length -1);
+					addr.personal = StringUtil.trim(str.substr(0,pos));
+					addr.address  = StringUtil.trim(str.substring(pos+1,str.length -1));
 				}
 			}
 			else{
@@ -113,7 +113,7 @@ package com.coltware.airxmail
 		}
 		
 		public function toString():String{
-			return this._personal + "<" + this._address + ">";
+			return this.toUTF8();
 		}
 		
 		public function toUTF8():String{

@@ -14,7 +14,7 @@ package com.coltware.airxmail.imap.command
 	{
 		public function HeaderCommand(msgid:String, useUid:Boolean=true)
 		{
-			super(msgid, useUid,"(FLAGS RFC822.HEADER)");
+			super(msgid, useUid,"(FLAGS RFC822.SIZE RFC822.HEADER)");
 			this.kind = IMAP4MessageEvent.IMAP4_MESSAGE_KIND_HEADER;
 		}
 	}
