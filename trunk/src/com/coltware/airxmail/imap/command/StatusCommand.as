@@ -90,6 +90,7 @@ package com.coltware.airxmail.imap.command
 			if(this._folder){
 				this._folder.$numExists = this._messagesNum;
 				this._folder.$numRecent = this._recentNum;
+				this._folder.$numUnseen = this._unseenNum;
 				this._folder.$uidnext   = this._uidnext;
 				this._folder.$uidvalidity = this._uidvalidity;
 				

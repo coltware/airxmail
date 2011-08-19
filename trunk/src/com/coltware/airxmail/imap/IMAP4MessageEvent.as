@@ -31,6 +31,8 @@ package com.coltware.airxmail.imap
 		
 		airxmail_internal var $flags:Array;
 		
+		airxmail_internal var $size:Number = -1;
+		
 		public function IMAP4MessageEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
 			super(type, bubbles, cancelable);
@@ -56,6 +58,10 @@ package com.coltware.airxmail.imap
 		
 		public function get kind():String{
 			return $kind;
+		}
+		
+		public function get size():Number{
+			return $size;
 		}
 	}
 }

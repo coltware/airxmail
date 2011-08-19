@@ -34,6 +34,7 @@ package com.coltware.airxmail.imap
 		
 		airxmail_internal var $numExists:int;
 		airxmail_internal var $numRecent:int;
+		airxmail_internal var $numUnseen:int;
 		airxmail_internal var $uidvalidity:String;
 		airxmail_internal var $uidnext:String;
 		
@@ -93,6 +94,10 @@ package com.coltware.airxmail.imap
 		 */ 
 		public function numRecent():int{
 			return this.$numRecent;
+		}
+		
+		public function numUnseen():int{
+			return this.$numUnseen;
 		}
 		
 		public function get uidnext():String{

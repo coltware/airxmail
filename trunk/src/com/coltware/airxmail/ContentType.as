@@ -185,6 +185,10 @@ package com.coltware.airxmail
 			return ret;
 		}
 		
+		override public function get value():String{
+			return this.getValue();
+		}
+		
 		override public function toString():String{
 			return this.getValue();
 		}

@@ -48,6 +48,10 @@ package com.coltware.airxmail.imap.command
 		override protected function parseResult(reader:StringLineReader):void{
 			var line:String = reader.next();
 			
+			log.debug("msg line : " + line);
+			
+			var msg_size:Number = -1;
+			
 			if(line.indexOf("FLAGS")){
 				// parse flags
 				var fpos:int = line.indexOf("FLAGS");
@@ -67,12 +71,23 @@ package com.coltware.airxmail.imap.command
 				_flags = new Array();
 			}
 			
+			if(line.indexOf("RFC822.SIZE")){
+				var spos:int = line.indexOf("RFC822.SIZE");
+				if(spos){
+					var ssp:int = line.indexOf(" ",spos + 1);
+					var sep:int = line.indexOf(" ",ssp + 1);
+					
+					msg_size = parseInt(line.substring(ssp + 1,sep));
+				}
+			}
+			
 			var pos1:int = line.indexOf("{");
 			var pos2:int = line.indexOf("}");
 			var sizeStr:String = line.substr(pos1 + 1,pos2-pos1 -1);
 			var size:Number = parseInt(sizeStr);
 			
 			var newReader:StringLineReader = reader.create(size);
+			
 			var parser:MailParser = new MailParser();
 			parser.parseStart(this._msgid);
 			while(line = newReader.next()){
@@ -83,6 +98,8 @@ package com.coltware.airxmail.imap.command
 			event.$kind  = this.kind;
 			event.client = client;
 			event.result = parser.parseEnd();
+			event.$size = msg_size;
+			
 			event.source = newReader.source as ByteArray;
 			event.octets = size;
 			client.dispatchEvent(event);

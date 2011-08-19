@@ -74,14 +74,7 @@ package com.coltware.airxmail.smtp
 	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.NOT_SUPPORT_ESMTP;
 	 */
 	[Event(name="smtpNotSupportEsmtp",type="com.coltware.airxmail.smtp.SMTPEvent")]
-	/**
-	 *  EHLOコマンドを投げてESMTPをサポートしていなかったときに発行されます。
-	 *
-	 *  メモ：このエラーエベントはehlo(hostname,autoSMTP=true)としても発行されます。
-	 *  ただし、この自動的にautoSMTP=trueの場合にはHELOコマンドを投げますので、何も処理しなくても問題ありません。
-	 * 
-	 * @eventType com.coltware.airxmail.smtp.SMTPEvent.NOT_SUPPORT_ESMTP;
-	 */
+	
 	[Event(name="smtpNoopOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	
 	[Event(name="smtpSentOk",type="com.coltware.airxmail.smtp.SMTPEvent")]
@@ -99,6 +92,8 @@ package com.coltware.airxmail.smtp
 	
 	/**
 	 *  SMTP コマンドエラー
+	 * 
+	 *  @eventType  com.coltware.airxmail.smtp.SMTPEvent.SMTP_COMMAND_ERROR
 	 */
 	[Event(name="smtpCommandError",type="com.coltware.airxmail.smtp.SMTPEvent")]
 	

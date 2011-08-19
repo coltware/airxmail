@@ -162,6 +162,9 @@ package com.coltware.airxmail
 		}
 		
 		private function parseMultipartBody(line:String,reader:StringLineReader):void{
+			
+			var childEvent:MailParserEvent;
+			
 			var lr:String = StringUtil.trim(line);
 			var multiPart:MimeMultiPart;
 			var part:MimeBodyPart;
@@ -174,12 +177,18 @@ package com.coltware.airxmail
 					part = _childParser.parseEnd();
 					multiPart.addChildPart(part);
 					
-					if($_debug) log.debug("add child :" + multiPart.numChildren + " - " + multiPart.uid + "<-- " + part.uid);
+					childEvent = new MailParserEvent(MailParserEvent.MAIL_PARSER_ADD_CHILD,true);
+					childEvent.part = part;
+					getRootParser().dispatchEvent(childEvent);
+					
+					if($_debug){}
+					log.debug("add child1 :" + multiPart.numChildren + " - " + multiPart.uid + "<-- " + part.uid);
 					
 					_childParser.parseStart(null,multiPart);
 				}
 				else{
-					_childParser = new MailParser();
+					_childParser = new MailParser(this);
+					
 					_childParser.parseStart(null,multiPart);
 					_childStart = true;
 					_childParser.$_parentParser = this;
@@ -191,8 +200,15 @@ package com.coltware.airxmail
 				
 				multiPart = _curMimeMessage as MimeMultiPart;
 				part = _childParser.parseEnd();
-				if($_debug) log.debug("add child :" + multiPart.numChildren + " - " + multiPart.uid + "<-- " + part.uid);
+				if($_debug) log.debug("add child2 :" + multiPart.numChildren + " - " + multiPart.uid + "<-- " + part.uid);
 				multiPart.addChildPart(part);
+				
+				childEvent = new MailParserEvent(MailParserEvent.MAIL_PARSER_ADD_CHILD,true);
+				childEvent.part = part;
+				
+				getRootParser().dispatchEvent(childEvent);
+				
+				
 				_childStart = false;
 			}
 			else{
@@ -340,6 +356,16 @@ package com.coltware.airxmail
 					}
 				}
 			}
+		}
+		
+		private function getRootParser():MailParser{
+			var parser:MailParser;
+			var ret:MailParser;
+			for(parser = this; parser != null; parser = parser.$_parentParser){
+				ret = parser;
+			}
+			return ret;
+			
 		}
 	}
 }
