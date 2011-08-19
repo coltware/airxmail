@@ -39,6 +39,7 @@ package com.coltware.airxmail.imap
 	import com.coltware.airxmail.imap.command.SelectCommand;
 	import com.coltware.airxmail.imap.command.StatusCommand;
 	import com.coltware.airxmail.imap.command.StoreCommand;
+	import com.coltware.airxmail.imap.command.SubscribeCommand;
 	import com.coltware.airxmail_internal;
 	
 	import flash.events.IEventDispatcher;
@@ -71,6 +72,7 @@ package com.coltware.airxmail.imap
 	[Event(name="imap4ResultUidList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	[Event(name="imap4ResultList",type="com.coltware.airxmail.imap.IMAP4ListEvent")]
 	
+	[Event(name="imap4CommandInvoked",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4CommandOk",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4CommandNo",type="com.coltware.airxmail.imap.IMAP4Event")]
 	[Event(name="imap4CommandBad",type="com.coltware.airxmail.imap.IMAP4Event")]
@@ -256,8 +258,12 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
-		public function message(msgId:String,useUid:Boolean = true):void{
-			var job:MessageCommand = new MessageCommand(msgId,useUid);
+		public function message(msgId:String,useUid:Boolean = true,flags:Boolean = true):void{
+			var opt:String = "(FLAGS RFC822)";
+			if(flags == false){
+				opt = "RFC822";
+			}
+			var job:MessageCommand = new MessageCommand(msgId,useUid,opt);
 			this.addJob(job);
 		}
 		
@@ -283,6 +289,11 @@ package com.coltware.airxmail.imap
 		
 		public function renameMailbox(oldmailbox:String,newmailbox:String):void{
 			var job:RenameCommand = new RenameCommand(oldmailbox,newmailbox);
+			this.addJob(job);
+		}
+		
+		public function subscribeMailbox(mailbox:Object):void{
+			var job:SubscribeCommand = new SubscribeCommand(mailbox);
 			this.addJob(job);
 		}
 		
@@ -329,6 +340,20 @@ package com.coltware.airxmail.imap
 			this.addJob(job);
 		}
 		
+		
+		public function execCommand(cmd:IMAP4Command):void{
+			this.addJob(cmd);
+		}
+		
+		
+		/**
+		 *  Clear ALL Commands
+		 * 
+		 */
+		public function clearCommands():void{
+			this.clearJobs();
+		}
+		
 		override protected function addJob(job:Object):void{
 			var imap4cmd:IMAP4Command = job as IMAP4Command;
 			imap4cmd.client = this;
@@ -353,13 +378,35 @@ package com.coltware.airxmail.imap
 				this._sock.writeUTFBytes(cmd + "\r\n");
 				this._sock.flush();
 				
-				_log.debug("CMD[" + cmd + "]");
+				var event:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_INVOKED);
+				event.$command = imap4cmd;
+				event.$message = cmd;
+				this.dispatchEvent(event);
+				
+				if(imap4cmd.key != "LOGIN"){
+					_log.debug("CMD[" + cmd + "]");
+				}
+				else{
+					var pswd:String = imap4cmd.value;
+					var mask:String = "";
+					if(pswd){
+						var len:int = pswd.length;
+						for(var i:int = 0; i<len; i++){
+							if(i%2 == 0){
+								mask += "*";
+							}
+							else{
+								mask += pswd.charAt(i);
+							}
+						}
+					}
+					_log.debug("CMD[" + tagname + " " + imap4cmd.key + " " + mask + "]");
+				}
 				
 				if(imap4cmd is IdleCommand){
 					this._isIdle = true;
 					this._isIdleDone = false;
 				}
-				
 			}
 			else{
 				var evt:IOErrorEvent = new IOErrorEvent(IOErrorEvent.IO_ERROR);
@@ -440,6 +487,9 @@ package com.coltware.airxmail.imap
 											this._auth = true;
 										}
 									}
+									else if(job is LogoutCommand){
+										this._serviceReady = false;
+									}
 									
 									var eventOk:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_OK);
 									eventOk.$command = job;
@@ -451,8 +501,6 @@ package com.coltware.airxmail.imap
 								}
 								else if(status == "NO"){
 									_log.debug(line);
-									
-									
 									
 									var eventNo:IMAP4Event = new IMAP4Event(IMAP4Event.IMAP4_COMMAND_NO);
 									eventNo.$message = StringUtil.trim(line.substr(line.indexOf("NO") + "NO".length));
@@ -543,5 +591,7 @@ package com.coltware.airxmail.imap
 			this._sock.flush();
 			this._isIdleDone = true;
 		}
+		
+		
 	}
 }
