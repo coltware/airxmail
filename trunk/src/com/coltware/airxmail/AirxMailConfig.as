@@ -8,6 +8,7 @@
  */
 package com.coltware.airxmail
 {
+	import com.coltware.airxlib.utils.ISO2022JPCode;
 	import com.coltware.airxmail.encode.Base64;
 	import com.coltware.airxmail.encode.IEncoder;
 	import com.coltware.airxmail_internal;
@@ -67,6 +68,15 @@ package com.coltware.airxmail
 		private static function _readMultiByte(bytes:ByteArray,charset:String):String{
 			if(charset == "utf8"){
 				charset = "utf-8";
+			}
+			
+			if(charset == 'iso-2022-jp'){
+				if(Capabilities.manufacturer.indexOf("Windows") == -1){
+					var jis:ISO2022JPCode = new ISO2022JPCode();
+					jis.dataInput = bytes;
+					jis.read();
+					return jis.toUTF8String();
+				}
 			}
 			return bytes.readMultiByte(bytes.bytesAvailable,charset);
 		}
