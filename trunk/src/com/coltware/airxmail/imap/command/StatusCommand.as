@@ -48,6 +48,7 @@ package com.coltware.airxmail.imap.command
 				_folder.nameUTF8 = this.value;
 			}
 			this._name = this.value;
+			this.value = '"' + this.value + '"';
 			this.value += " (MESSAGES RECENT UIDNEXT UIDVALIDITY UNSEEN)";
 		}
 		
