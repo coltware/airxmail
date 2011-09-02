@@ -32,8 +32,13 @@ package com.coltware.airxmail
 		public function set key(v:String):void{
 			this._keyName = StringUtil.trim(v);
 		}
+		
 		public function get value():String{
 			return this._value;
+		}
+		
+		public function getPlainValue():String{
+			return this._org;
 		}
 		
 		public function set value(v:String):void{

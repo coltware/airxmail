@@ -29,6 +29,8 @@ package com.coltware.airxmail
 				return "";
 			}
 			
+			log.debug("mimeHader input:" + input);
+			
 			var ret:String = "";
 			
 			var size:int = input.length;
@@ -162,7 +164,8 @@ package com.coltware.airxmail
 				}
 			}
 			ret.position = 0;
-			return ret.readMultiByte(ret.bytesAvailable,charset);
+			var str:String = AirxMailConfig.getDecodeCharsetFunction(charset)(ret,charset);
+			return str;
 		}
 	}
 }

@@ -105,7 +105,7 @@ package com.coltware.airxmail
 		public function get subjectUTF8():String{
 			var head:MimeHeader = this.getHeader("subject");
 			if(head){
-				var _sub:String = head.value;
+				var _sub:String = head.getPlainValue();
 				return MimeUtils.decodeMimeHeader(_sub);
 			}
 			else{
