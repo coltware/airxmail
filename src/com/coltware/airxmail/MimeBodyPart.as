@@ -89,7 +89,7 @@ package com.coltware.airxmail
 			this._headers = new Vector.<MimeHeader>();
 			parentPart = null;
 			$bodySource = new ByteArray();
-			log.debug("create part object : [" + _uid + "]"  + this);
+			//log.debug("create part object : [" + _uid + "]"  + this);
 			if(ct != null){
 				this.contentType = ct;
 			}
@@ -140,7 +140,7 @@ package com.coltware.airxmail
 				var enc:String = header.value;
 				enc = enc.toLowerCase();
 				
-				log.debug("bodyByteArray -> " + enc);
+				//log.debug("bodyByteArray -> " + enc);
 				
 				if(enc == "base64"){
 					var base64dec:Base64Decoder = new Base64Decoder();
@@ -244,6 +244,10 @@ package com.coltware.airxmail
 				list.push(key);
 			}
 			return list;
+		}
+		
+		public function getHeaderMap():Object{
+			return this._headerKeys;
 		}
 		
 		public function hasHeader(key:String):Boolean{
