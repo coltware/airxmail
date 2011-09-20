@@ -134,6 +134,10 @@ package com.coltware.airxmail
 					_isBody = true;
 					//  ヘッダをパースする
 					this.parseHeaderEnd();
+					//	ヘッダパースの終了でイベントを発行
+					var parserEvent:MailParserEvent = new MailParserEvent(MailParserEvent.MAIL_PARSER_HEADER_END);
+					parserEvent.item = _rootMessage;
+					this.dispatchEvent(parserEvent);
 				}
 				else{
 					//  通常のヘッダ部分
@@ -178,7 +182,7 @@ package com.coltware.airxmail
 					multiPart.addChildPart(part);
 					
 					childEvent = new MailParserEvent(MailParserEvent.MAIL_PARSER_ADD_CHILD,true);
-					childEvent.part = part;
+					childEvent.item = part;
 					getRootParser().dispatchEvent(childEvent);
 					
 					if($_debug){}
@@ -204,7 +208,7 @@ package com.coltware.airxmail
 				multiPart.addChildPart(part);
 				
 				childEvent = new MailParserEvent(MailParserEvent.MAIL_PARSER_ADD_CHILD,true);
-				childEvent.part = part;
+				childEvent.item = part;
 				
 				getRootParser().dispatchEvent(childEvent);
 				
