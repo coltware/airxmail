@@ -6,8 +6,9 @@ package com.coltware.airxmail
 	{
 		
 		public static const MAIL_PARSER_ADD_CHILD:String = "mailParserAddChild";
+		public static const MAIL_PARSER_HEADER_END:String = "mainParserHeaderEnd";
 		
-		public var part:MimeBodyPart;
+		public var item:Object;
 		
 		public function MailParserEvent(type:String, bubbles:Boolean=false, cancelable:Boolean=false)
 		{
