@@ -350,9 +350,9 @@ package com.coltware.airxmail.MailSender
 			if(this._useBuffer){
 				log.debug("enable buffer size:" + this._bufferSize);
 				_bufferOutput = new ByteArray();
-				_totalSize = _bufferOutput.length;
 				
 				this.currentMessage.writeBodySource(IDataOutput(_bufferOutput));
+				_totalSize = _bufferOutput.length;
 				internalWriteLoop();
 			}
 			else{
@@ -428,6 +428,7 @@ package com.coltware.airxmail.MailSender
 		protected function fireConnectionFailed(e:* = null):void{
 			//  サービスの準備ができないまま、サーバからの切断なので
 			var event:SMTPEvent = new SMTPEvent(SMTPEvent.SMTP_CONNECTION_FAILED,true);
+			event.$message = "service not ready...";
 			this.dispatchEvent(event);
 		}
 		
