@@ -18,6 +18,7 @@ package com.coltware.airxmail.MailSender
 	
 	import flash.events.EventDispatcher;
 	import flash.events.IOErrorEvent;
+	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TimerEvent;
 	import flash.utils.ByteArray;
@@ -132,6 +133,9 @@ package com.coltware.airxmail.MailSender
 		private var _bufferOutput:ByteArray;
 		private var _timer:Timer;
 		private var _bufferSize:uint = 16384;
+		
+		private var _totalSize:int = 0;
+		private var _sentSize:int = 0;
 		
 		private var _keep_conn:Boolean = false;
 		
@@ -329,6 +333,10 @@ package com.coltware.airxmail.MailSender
 		 *   write data
 		 */
 		private function writeData(e:SMTPEvent):void{
+			
+			_totalSize = 0;
+			_sentSize = 0;
+			
 			_internalFlush = true;
 			var start:Date = new Date();
 			log.debug("writeData start");
@@ -342,6 +350,8 @@ package com.coltware.airxmail.MailSender
 			if(this._useBuffer){
 				log.debug("enable buffer size:" + this._bufferSize);
 				_bufferOutput = new ByteArray();
+				_totalSize = _bufferOutput.length;
+				
 				this.currentMessage.writeBodySource(IDataOutput(_bufferOutput));
 				internalWriteLoop();
 			}
@@ -407,6 +417,9 @@ package com.coltware.airxmail.MailSender
 			var end:Date = new Date();
 			var cost:Number = end.time - start.time;
 			log.debug("write data size: [" + writeSize + "] / cost [" + cost + "]msec");
+			
+			_sentSize += writeSize;
+			client.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS,false,false,_sentSize,_totalSize));
 		}
 		
 		/**
