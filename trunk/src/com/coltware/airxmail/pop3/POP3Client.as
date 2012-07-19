@@ -426,7 +426,7 @@ package com.coltware.airxmail.pop3
 								job.data = new Array();
 								job.source = new ByteArray();
 							}
-							else if(line.substr(0,4) == "+ERR"){
+							else if(line.substr(0,4) == "-ERR"){
 								//  ERROR
 								var errEvent:POP3Event = new POP3Event(POP3Event.POP3_COMMAND_ERROR);
 								errEvent.client = this;
@@ -454,6 +454,12 @@ package com.coltware.airxmail.pop3
 									_parser.parseStart(_uid);
 								}
 								job.source = new ByteArray();
+							}
+							else if(l.substr(0,4) == "-ERR"){
+								var errEvent2:POP3Event = new POP3Event(POP3Event.POP3_COMMAND_ERROR);
+								errEvent2.client = this;
+								errEvent2.$message = line;
+								this.dispatchEvent(errEvent2);
 							}
 						}
 						else{
@@ -529,10 +535,16 @@ package com.coltware.airxmail.pop3
 			e.client = this;
 			this.dispatchEvent(e);
 		}
+		
+		public function clearCommands():void{
+			this.clearJobs();
+		}
+		
 		/*
 		private function createMimeMessage(headers:Array):void{
 			
 		}
 		*/
 	}
+	
 }
