@@ -220,7 +220,7 @@ package com.coltware.airxmail.MailSender
 					if(vbool || ( vstr && vstr.toLowerCase() == "true")){
 						var tlsClz:Class = getDefinitionByName(TLS_CLASSNAME) as Class;
 						var tlsObj:Object = new tlsClz();
-						client.socketObject = obj;
+						client.socketObject = tlsObj;
 					}
 					break;
 				case AUTO_STARTTLS:
